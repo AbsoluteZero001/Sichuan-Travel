@@ -1,18 +1,18 @@
 from flask import Blueprint, request, jsonify
 import json
 import os
-import re
+from pathlib import Path
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError, URLError
 
 ai_bp = Blueprint('ai', __name__)
 
 def _load_dotenv_file():
-    backend_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    project_dir = os.path.dirname(backend_dir)
+    backend_dir = Path(__file__).resolve().parent.parent
+    project_dir = backend_dir.parent
     env_files = [
-        os.path.join(backend_dir, '.env'),
-        os.path.join(project_dir, '.env')
+        backend_dir / '.env',
+        project_dir / '.env'
     ]
 
     for env_file in env_files:
@@ -83,7 +83,7 @@ def call_llm(question):
     )
 
     try:
-        with urlopen(req, timeout=config['timeout']) as response:
+        with urlopen(req, timeout=float(config['timeout'])) as response:
             body = json.loads(response.read().decode('utf-8'))
         answer = body['choices'][0]['message']['content'].strip()
         return answer, config['model']
