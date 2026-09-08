@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>四川旅游 - 发现天府之国的魅力</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>四川旅游</h1>
+                <p>发现天府之国的魅力</p>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="/">首页</a></li>
+                    <li><a href="/about-sichuan.html">关于四川</a></li>
+                    <li><a href="/all-spots.html">景点介绍</a></li>
+                    <li><a href="/travel-tips.html">旅游指南</a></li>
+                </ul>
+            </nav>
+            <div class="auth-links">
+                <a href="/login.html">登录</a>
+                <a href="/register.html">注册</a>
+            </div>
+        </div>
+    </header>
+
+    <section class="banner">
+        <h2>2026四川旅游景点推荐,四川欢迎您</h2>
+        <p>从雪山到盆地，从熊猫到火锅，体验不一样的四川</p>
+        <a href="/all-spots.html" class="btn">开始探索</a>
+    </section>
+
+    <section class="section" id="spots">
+        <div class="container">
+            <div class="section-title">
+                <h3>推荐景点</h3>
+                <div class="line"></div>
+            </div>
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="搜索景点...">
+                <button onclick="searchSpots()">搜索</button>
+            </div>
+            <div class="spots-grid" id="spotsGrid">
+            </div>
+        </div>
+    </section>
+
+    <section class="section" style="background-color: #f8f9fa;">
+        <div class="container">
+            <div class="section-title">
+                <h3>快速导航</h3>
+                <div class="line"></div>
+            </div>
+            <div class="features">
+                <div class="feature-item" style="cursor: pointer;" onclick="navigateTo('about-sichuan.html')">
+                    <h4>关于四川</h4>
+                    <p>了解四川的历史文化、自然风光、特色美食和川剧艺术</p>
+                    <a href="/about-sichuan.html" class="btn" style="margin-top: 15px; padding: 8px 20px; font-size: 14px;">了解更多</a>
+                </div>
+                <div class="feature-item" style="cursor: pointer;" onclick="navigateTo('all-spots.html')">
+                    <h4>景点大全</h4>
+                    <p>浏览四川所有著名景点，发现您心仪的旅游目的地</p>
+                    <a href="/all-spots.html" class="btn" style="margin-top: 15px; padding: 8px 20px; font-size: 14px;">浏览景点</a>
+                </div>
+                <div class="feature-item" style="cursor: pointer;" onclick="navigateTo('travel-tips.html')">
+                    <h4>旅游指南</h4>
+                    <p>获取最佳旅游时间、交通指南、路线推荐和实用贴士</p>
+                    <a href="/travel-tips.html" class="btn" style="margin-top: 15px; padding: 8px 20px; font-size: 14px;">查看攻略</a>
+                </div>
+                <div class="feature-item" style="cursor: pointer;" onclick="navigateTo('login.html')">
+                    <h4>用户中心</h4>
+                    <p>登录后可收藏景点、发表评论，记录您的旅行足迹</p>
+                    <a href="/login.html" class="btn" style="margin-top: 15px; padding: 8px 20px; font-size: 14px;">立即登录</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>2026四川旅游景点推荐,四川欢迎您</p>
+    </footer>
+
+    <script src="common.js"></script>
+    <script>
+        let currentKeyword = '';
+        const favoriteStatus = {};
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            updateAuthLinks();
+            await loadSpots();
+        });
+
+        document.getElementById('searchInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                searchSpots();
+            }
+        });
+
+        async function loadSpots(keyword = '') {
+            const result = await fetchSpots(keyword);
+            await renderSpots(result.spots);
+        }
+
+        function searchSpots() {
+            currentKeyword = document.getElementById('searchInput').value;
+            loadSpots(currentKeyword);
+        }
+
+        async function renderSpots(spots) {
+            const grid = document.getElementById('spotsGrid');
+            const user = getCurrentUser();
+            
+            if (spots.length === 0) {
+                grid.innerHTML = '<p style="text-align: center; color: #666;">暂无景点数据</p>';
+                return;
+            }
+
+            if (user) {
+                for (const spot of spots) {
+                    const favoriteData = await fetchSpotFavorite(spot.id);
+                    favoriteStatus[spot.id] = favoriteData ? favoriteData.is_favorited || false : false;
+                }
+            }
+
+            const displaySpots = spots.slice(0, 18);
+            
+            grid.innerHTML = displaySpots.map(spot => {
+                const isFavorited = favoriteStatus[spot.id] || false;
+                return `
+                <div class="spot-card">
+                    <img src="${spot.image || 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=sichuan%20beautiful%20scenery&image_size=landscape_4_3'}" alt="${spot.name}">
+                    <div class="spot-info">
+                        <h4>${spot.name}</h4>
+                        <p>${spot.description ? spot.description.substring(0, 80) + '...' : '暂无简介'}</p>
+                        <div style="margin-bottom: 10px;">
+                            <span class="tag">${spot.season || '四季皆宜'}</span>
+                            <span class="tag">${spot.city || '四川'}</span>
+                        </div>
+                        <div style="margin-bottom: 15px;">
+                            <span style="font-size: 18px; color: #dc3545; font-weight: bold;">¥${spot.price || 0}</span>
+                            <span style="margin-left: 15px; font-size: 14px; color: #666;">♥ ${spot.favorite_count || 0} 人收藏</span>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <a href="/spot-detail.html?id=${spot.id}" class="btn">查看详情</a>
+                            <button class="btn btn-favorite ${isFavorited ? 'filled' : ''}" onclick="handleCardFavorite(${spot.id}, this)">${isFavorited ? '♥ 已收藏' : '♡ 收藏'}</button>
+                        </div>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        async function handleCardFavorite(spotId, btn) {
+            const user = getCurrentUser();
+            if (!user) {
+                alert('请先登录');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const favoriteData = await fetchSpotFavorite(spotId);
+            const isFavorited = favoriteData ? favoriteData.is_favorited || false : false;
+
+            if (isFavorited) {
+                const response = await removeFavoriteBySpot(spotId);
+                if (response && response.success) {
+                    btn.innerHTML = '♡ 收藏';
+                    btn.classList.remove('filled');
+                    loadSpots(currentKeyword);
+                } else {
+                    alert(response?.message || '取消收藏失败');
+                }
+            } else {
+                const response = await addFavorite(spotId);
+                if (response && response.success) {
+                    btn.innerHTML = '♥ 已收藏';
+                    btn.classList.add('filled');
+                    loadSpots(currentKeyword);
+                } else {
+                    alert(response?.message || '收藏失败');
+                }
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理员面板 - 四川旅游</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            font-weight: bold;
+            color: #666;
+            transition: all 0.2s;
+        }
+        .tab.active {
+            border-bottom-color: #4a90c2;
+            color: #4a90c2;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>四川旅游</h1>
+                <p>发现天府之国的魅力</p>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="/">首页</a></li>
+                    <li><a href="/about-sichuan.html">关于四川</a></li>
+                    <li><a href="/all-spots.html">景点介绍</a></li>
+                    <li><a href="/travel-tips.html">旅游指南</a></li>
+                    <li><a href="/admin-panel.html">管理面板</a></li>
+                </ul>
+            </nav>
+            <div class="auth-links">
+                <span></span>
+                <a href="#" onclick="logout()">退出</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="admin-panel">
+            <h2>管理面板</h2>
+            
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('spots', this)">景点管理</div>
+                <div class="tab" onclick="switchTab('favorites', this)">收藏管理</div>
+            </div>
+            
+            <div class="tab-content active" id="spotsTab">
+                <div class="actions">
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="搜索景点...">
+                        <button onclick="searchSpots()">搜索</button>
+                    </div>
+                    <button class="btn" onclick="showAddModal()">添加景点</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>图片</th>
+                            <th>名称</th>
+                            <th>城市</th>
+                            <th>最佳季节</th>
+                            <th>价格</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="spotsTable">
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="tab-content" id="favoritesTab">
+                <div class="actions">
+                    <div class="search-box">
+                        <input type="text" id="favoriteSearchInput" placeholder="搜索景点名称...">
+                        <button onclick="searchFavorites()">搜索</button>
+                    </div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>景点名称</th>
+                            <th>收藏用户</th>
+                            <th>收藏时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="favoritesTable">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <div id="addModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="hideModal('addModal')">&times;</span>
+            <h3>添加景点</h3>
+            <form id="addForm" onsubmit="handleAddSpot(event)">
+                <div class="form-group">
+                    <label for="addName">景点名称</label>
+                    <input type="text" id="addName" required>
+                </div>
+                <div class="form-group">
+                    <label for="addCity">所在城市</label>
+                    <input type="text" id="addCity" required>
+                </div>
+                <div class="form-group">
+                    <label for="addSeason">最佳季节</label>
+                    <select id="addSeason">
+                        <option value="春季">春季</option>
+                        <option value="夏季">夏季</option>
+                        <option value="秋季">秋季</option>
+                        <option value="冬季">冬季</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="addPrice">门票价格</label>
+                    <input type="number" id="addPrice" step="0.01" value="0">
+                </div>
+                <div class="form-group">
+                    <label for="addOpenTime">开放时间</label>
+                    <input type="text" id="addOpenTime" placeholder="例如：08:00-18:00">
+                </div>
+                <div class="form-group">
+                    <label for="addImage">图片URL</label>
+                    <input type="text" id="addImage" placeholder="输入图片链接">
+                </div>
+                <div class="form-group">
+                    <label for="addDescription">详细描述</label>
+                    <textarea id="addDescription" placeholder="输入详细描述"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="addGuide">交通指南</label>
+                    <textarea id="addGuide" placeholder="输入交通指南"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="addTips">旅游贴士</label>
+                    <textarea id="addTips" placeholder="输入旅游贴士"></textarea>
+                </div>
+                <button type="submit" class="btn" style="width: 100%;">添加</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="hideModal('editModal')">&times;</span>
+            <h3>编辑景点</h3>
+            <form id="editForm" onsubmit="handleEditSpot(event)">
+                <input type="hidden" id="editId">
+                <div class="form-group">
+                    <label for="editName">景点名称</label>
+                    <input type="text" id="editName" required>
+                </div>
+                <div class="form-group">
+                    <label for="editCity">所在城市</label>
+                    <input type="text" id="editCity" required>
+                </div>
+                <div class="form-group">
+                    <label for="editSeason">最佳季节</label>
+                    <select id="editSeason">
+                        <option value="春季">春季</option>
+                        <option value="夏季">夏季</option>
+                        <option value="秋季">秋季</option>
+                        <option value="冬季">冬季</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="editPrice">门票价格</label>
+                    <input type="number" id="editPrice" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label for="editOpenTime">开放时间</label>
+                    <input type="text" id="editOpenTime">
+                </div>
+                <div class="form-group">
+                    <label for="editImage">图片URL</label>
+                    <input type="text" id="editImage">
+                </div>
+                <div class="form-group">
+                    <label for="editDescription">详细描述</label>
+                    <textarea id="editDescription"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="editGuide">交通指南</label>
+                    <textarea id="editGuide"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="editTips">旅游贴士</label>
+                    <textarea id="editTips"></textarea>
+                </div>
+                <button type="submit" class="btn" style="width: 100%;">保存</button>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <p>2026四川旅游景点推荐，四川欢迎您</p>
+    </footer>
+
+    <script src="common.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = getCurrentUser();
+            if (!user || user.role !== 'admin') {
+                window.location.href = 'login.html';
+                return;
+            }
+            updateAuthLinks();
+            await loadSpots();
+            
+            document.getElementById('favoriteSearchInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    searchFavorites();
+                }
+            });
+        });
+
+        document.getElementById('searchInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                searchSpots();
+            }
+        });
+
+        function switchTab(tabName, el) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            el.classList.add('active');
+            
+            if (tabName === 'spots') {
+                document.getElementById('spotsTab').classList.add('active');
+            } else if (tabName === 'favorites') {
+                document.getElementById('favoritesTab').classList.add('active');
+                loadFavorites();
+            }
+        }
+
+        async function loadFavorites(keyword = '') {
+            const result = await fetchAllFavorites(keyword);
+            renderFavorites(result.favorites);
+        }
+
+        function searchFavorites() {
+            const keyword = document.getElementById('favoriteSearchInput').value;
+            loadFavorites(keyword);
+        }
+
+        function renderFavorites(favorites) {
+            const tbody = document.getElementById('favoritesTable');
+            
+            if (favorites.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">暂无收藏数据</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = favorites.map(favorite => `
+                <tr>
+                    <td>${favorite.id}</td>
+                    <td>${favorite.spot_name || '-'}</td>
+                    <td>${favorite.username || '-'}</td>
+                    <td>${favorite.created_at || '-'}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-danger" onclick="handleDeleteFavorite(${favorite.id})">删除</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function handleDeleteFavorite(id) {
+            if (!confirm('确定要删除这个收藏记录吗？')) {
+                return;
+            }
+
+            const response = await deleteFavorite(id);
+
+            if (response && response.success) {
+                alert('删除成功！');
+                loadFavorites();
+            } else {
+                alert(response?.message || '删除失败，请重试');
+            }
+        }
+
+        async function loadSpots(keyword = '') {
+            const result = await fetchSpots(keyword);
+            renderSpots(result.spots);
+        }
+
+        function searchSpots() {
+            const keyword = document.getElementById('searchInput').value;
+            loadSpots(keyword);
+        }
+
+        function renderSpots(spots) {
+            const tbody = document.getElementById('spotsTable');
+            
+            if (spots.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">暂无景点数据</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = spots.map(spot => `
+                <tr>
+                    <td>${spot.id}</td>
+                    <td><img src="${spot.image || 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=sichuan%20scenery&image_size=landscape_4_3'}" alt="${spot.name}"></td>
+                    <td>${spot.name}</td>
+                    <td>${spot.city || '四川'}</td>
+                    <td>${spot.season || '-'}</td>
+                    <td>¥${spot.price || 0}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-secondary" onclick="showEditModal(${spot.id})">编辑</button>
+                            <button class="btn btn-danger" onclick="handleDeleteSpot(${spot.id})">删除</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function showAddModal() {
+            document.getElementById('addForm').reset();
+            showModal('addModal');
+        }
+
+        async function showEditModal(id) {
+            const spot = await fetchSpotById(id);
+            if (!spot) {
+                alert('获取景点信息失败');
+                return;
+            }
+
+            document.getElementById('editId').value = spot.id;
+            document.getElementById('editName').value = spot.name;
+            document.getElementById('editCity').value = spot.city;
+            document.getElementById('editSeason').value = spot.season || '春季';
+            document.getElementById('editPrice').value = spot.price || 0;
+            document.getElementById('editOpenTime').value = spot.open_time || '';
+            document.getElementById('editImage').value = spot.image || '';
+            document.getElementById('editDescription').value = spot.description || '';
+            document.getElementById('editGuide').value = spot.guide || '';
+            document.getElementById('editTips').value = spot.tips || '';
+
+            showModal('editModal');
+        }
+
+        async function handleAddSpot(event) {
+            event.preventDefault();
+
+            const spotData = {
+                name: document.getElementById('addName').value,
+                city: document.getElementById('addCity').value,
+                season: document.getElementById('addSeason').value,
+                price: parseFloat(document.getElementById('addPrice').value) || 0,
+                open_time: document.getElementById('addOpenTime').value,
+                image: document.getElementById('addImage').value,
+                description: document.getElementById('addDescription').value,
+                guide: document.getElementById('addGuide').value,
+                tips: document.getElementById('addTips').value
+            };
+
+            const response = await addSpot(spotData);
+
+            if (response && response.success) {
+                alert('添加成功！');
+                hideModal('addModal');
+                loadSpots();
+            } else {
+                alert(response?.message || '添加失败，请重试');
+            }
+        }
+
+        async function handleEditSpot(event) {
+            event.preventDefault();
+
+            const id = document.getElementById('editId').value;
+            const spotData = {
+                name: document.getElementById('editName').value,
+                city: document.getElementById('editCity').value,
+                season: document.getElementById('editSeason').value,
+                price: parseFloat(document.getElementById('editPrice').value) || 0,
+                open_time: document.getElementById('editOpenTime').value,
+                image: document.getElementById('editImage').value,
+                description: document.getElementById('editDescription').value,
+                guide: document.getElementById('editGuide').value,
+                tips: document.getElementById('editTips').value
+            };
+
+            const response = await updateSpot(id, spotData);
+
+            if (response && response.success) {
+                alert('更新成功！');
+                hideModal('editModal');
+                loadSpots();
+            } else {
+                alert(response?.message || '更新失败，请重试');
+            }
+        }
+
+        async function handleDeleteSpot(id) {
+            if (!confirm('确定要删除这个景点吗？')) {
+                return;
+            }
+
+            const success = await deleteSpot(id);
+
+            if (success) {
+                alert('删除成功！');
+                loadSpots();
+            } else {
+                alert('删除失败，请重试');
+            }
+        }
+
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal')) {
+                e.target.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>

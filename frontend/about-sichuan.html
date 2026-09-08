@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>关于四川 - 四川旅游</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .detail-section {
+            padding: 60px 0;
+            background-color: white;
+        }
+        .detail-section:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        .detail-content {
+            display: flex;
+            gap: 40px;
+            align-items: center;
+        }
+        .detail-content.reverse {
+            flex-direction: row-reverse;
+        }
+        .detail-text {
+            flex: 1;
+        }
+        .detail-text h3 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #4a90c2;
+        }
+        .detail-text p {
+            font-size: 15px;
+            color: #666;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+        .detail-image {
+            flex: 1;
+        }
+        .detail-image img {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+        .highlight-box {
+            background-color: #e8f4fc;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        .highlight-box h4 {
+            color: #4a90c2;
+            margin-bottom: 10px;
+        }
+        .highlight-box ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .highlight-box ul li {
+            padding: 8px 0;
+            border-bottom: 1px dashed #b8d4ea;
+            color: #555;
+        }
+        .highlight-box ul li:last-child {
+            border-bottom: none;
+        }
+        .food-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .food-item {
+            text-align: center;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .food-item img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        .food-item h4 {
+            color: #4a90c2;
+            margin-bottom: 10px;
+        }
+        .food-item p {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.5;
+        }
+        .culture-card {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+        .culture-card.reverse {
+            flex-direction: row-reverse;
+        }
+        .culture-card .culture-text {
+            flex: 1;
+        }
+        .culture-card .culture-text h4 {
+            color: #4a90c2;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+        .culture-card .culture-text p {
+            color: #666;
+            line-height: 1.8;
+        }
+        .culture-card .culture-image {
+            width: 300px;
+            flex-shrink: 0;
+        }
+        .culture-card .culture-image img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+        .intro-section {
+            text-align: center;
+            padding: 80px 0;
+            background: linear-gradient(rgba(74, 144, 194, 0.9), rgba(74, 144, 194, 0.7)),
+                        url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200');
+            background-size: cover;
+            background-position: center;
+            color: white;
+        }
+        .intro-section h2 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+        .intro-section p {
+            font-size: 18px;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>四川旅游</h1>
+                <p>发现天府之国的魅力</p>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="/">首页</a></li>
+                    <li><a href="/about-sichuan.html">关于四川</a></li>
+                    <li><a href="/all-spots.html">景点介绍</a></li>
+                    <li><a href="/travel-tips.html">旅游指南</a></li>
+                </ul>
+            </nav>
+            <div class="auth-links">
+                <a href="/login.html">登录</a>
+                <a href="/register.html">注册</a>
+            </div>
+        </div>
+    </header>
+
+    <section class="intro-section">
+        <h2>走进四川</h2>
+        <p>四川，简称"川"或"蜀"，位于中国西南部，是中国重要的经济、文化、工业、农业、军事、旅游大省。这里自然风光绚丽多彩，历史文化底蕴深厚，民族风情独具特色。</p>
+    </section>
+
+    <section class="detail-section">
+        <div class="container">
+            <div class="detail-content">
+                <div class="detail-text">
+                    <h3>国宝大熊猫</h3>
+                    <p>四川是大熊猫的故乡，拥有全球80%以上的野生大熊猫。大熊猫被誉为"活化石"和"中国国宝"，是世界自然基金会的形象大使。</p>
+                    <p>成都大熊猫繁育研究基地是全球最大的大熊猫人工繁育迁地保护中心，这里生活着几十只可爱的大熊猫，是观赏和了解大熊猫的最佳地点。</p>
+                    <div class="highlight-box">
+                        <h4>大熊猫观赏地点</h4>
+                        <ul>
+                            <li>成都大熊猫繁育研究基地 - 成都市</li>
+                            <li>卧龙国家级自然保护区 - 阿坝州</li>
+                            <li>碧峰峡熊猫基地 - 雅安市</li>
+                            <li>四姑娘山大熊猫栖息地 - 阿坝州</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="detail-image">
+                    <img src="/images/dxm.jpg" alt="大熊猫">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="detail-section">
+        <div class="container">
+            <div class="detail-content reverse">
+                <div class="detail-text">
+                    <h3>壮丽山水</h3>
+                    <p>四川地势复杂，地貌多样，拥有高山、峡谷、平原、丘陵等多种地形。这里汇聚了中国最美的自然景观，从世界自然遗产九寨沟到佛教名山峨眉山，从人间仙境稻城亚丁到东方阿尔卑斯四姑娘山。</p>
+                    <p>四川的山水之美，既有江南的婉约秀丽，又有高原的雄浑壮阔，每一处风景都如诗如画，令人流连忘返。</p>
+                    <div class="highlight-box">
+                        <h4>著名自然景观</h4>
+                        <ul>
+                            <li>九寨沟 - 童话世界，人间仙境</li>
+                            <li>峨眉山 - 峨眉天下秀</li>
+                            <li>稻城亚丁 - 最后的香格里拉</li>
+                            <li>四姑娘山 - 东方阿尔卑斯</li>
+                            <li>青城山 - 青城天下幽</li>
+                            <li>海螺沟 - 冰川与温泉并存</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="detail-image">
+                    <img src="/images/zlss.jpg" alt="壮丽山水">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="detail-section">
+        <div class="container">
+            <div class="section-title">
+                <h3>川菜美食</h3>
+                <div class="line"></div>
+            </div>
+            <p style="text-align: center; color: #666; margin-bottom: 30px; font-size: 15px;">川菜是中国八大菜系之一，以麻辣鲜香、一菜一格、百菜百味著称</p>
+            <div class="food-grid">
+                <div class="food-item">
+                    <img src="/images/hg.jpg" alt="四川火锅">
+                    <h4>四川火锅</h4>
+                    <p>麻辣鲜香，热气腾腾，是四川最具代表性的美食。红汤锅底配上各种新鲜食材，让人欲罢不能。</p>
+                </div>
+                <div class="food-item">
+                    <img src="/images/ccx.jpg" alt="串串香">
+                    <h4>串串香</h4>
+                    <p>将各种食材串在竹签上，放入滚烫的火锅中涮煮，蘸上特制调料，风味独特。</p>
+                </div>
+                <div class="food-item">
+                    <img src="/images/mpdf.jpg" alt="麻婆豆腐">
+                    <h4>麻婆豆腐</h4>
+                    <p>豆腐嫩滑，麻辣鲜香，是川菜中的经典之作，名扬海内外。</p>
+                </div>
+                <div class="food-item">
+                    <img src="/images/hgr.jpg" alt="回锅肉">
+                    <h4>回锅肉</h4>
+                    <p>肥而不腻，咸甜适中，是四川家家户户都会做的家常菜。</p>
+                </div>
+                <div class="food-item">
+                    <img src="/images/ddm.jpg" alt="担担面">
+                    <h4>担担面</h4>
+                    <p>面条劲道，酱料香浓，是四川著名的传统面食。</p>
+                </div>
+                <div class="food-item">
+                    <img src="/images/fqfp.jpg" alt="夫妻肺片">
+                    <h4>夫妻肺片</h4>
+                    <p>牛肉牛杂切片，配上红油调料，麻辣鲜香，口感丰富。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="detail-section">
+        <div class="container">
+            <div class="section-title">
+                <h3>川剧文化</h3>
+                <div class="line"></div>
+            </div>
+            <div class="culture-card">
+                <div class="culture-text">
+                    <h4>变脸</h4>
+                    <p>变脸是川剧表演中最具代表性的特技之一，演员在瞬间变换脸谱，令人叹为观止。变脸的手法多样，包括抹脸、扯脸、运气变脸等，每一种都需要演员经过长期的刻苦训练。</p>
+                </div>
+                <div class="culture-image">
+                    <img src="/images/bl.jpg" alt="变脸">
+                </div>
+            </div>
+            <div class="culture-card reverse">
+                <div class="culture-text">
+                    <h4>吐火</h4>
+                    <p>吐火是川剧的另一项绝技，演员通过特殊的技巧，从口中喷出熊熊烈火，场面震撼。这项技艺不仅需要勇气，更需要精湛的技巧和对火候的精准把握。</p>
+                </div>
+                <div class="culture-image">
+                    <img src="/images/th.jpg" alt="吐火">
+                </div>
+            </div>
+            <div class="culture-card">
+                <div class="culture-text">
+                    <h4>滚灯</h4>
+                    <p>滚灯是川剧中的喜剧表演，演员头顶油灯，在地上翻滚、做各种高难度动作，而油灯始终不掉落、不熄灭，展现了演员高超的平衡能力和表演技巧。</p>
+                </div>
+                <div class="culture-image">
+                    <img src="/images/gd.jpg" alt="滚灯">
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 30px;">
+                <p style="color: #666; margin-bottom: 20px;">推荐观赏地点：成都锦里古街、宽窄巷子、蜀风雅韵川剧院</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>2026四川旅游景点推荐，四川欢迎您</p>
+    </footer>
+
+    <script src="common.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            updateAuthLinks();
+        });
+    </script>
+</body>
+</html>

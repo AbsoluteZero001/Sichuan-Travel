@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>景点详情 - 四川旅游</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .favorite-section {
+            background-color: #f8fafc;
+            padding: 30px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        .favorite-section h3 {
+            color: #4a90c2;
+            margin-bottom: 15px;
+        }
+        .favorite-section .favorite-count {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        .favorite-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            font-size: 16px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .favorite-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .favorite-btn.filled {
+            background-color: #e74c3c;
+            color: white;
+        }
+        .favorite-btn.filled:hover {
+            background-color: #c0392b;
+        }
+        .favorite-btn:not(.filled) {
+            background-color: #4a90c2;
+            color: white;
+        }
+        .favorite-btn:not(.filled):hover {
+            background-color: #3a7ab0;
+        }
+        .favorite-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .login-prompt {
+            text-align: center;
+            padding: 15px;
+            background-color: #fff3cd;
+            border-radius: 5px;
+            color: #856404;
+            font-size: 14px;
+            margin-top: 15px;
+        }
+        .login-prompt a {
+            color: #4a90c2;
+            text-decoration: none;
+        }
+        .login-prompt a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>四川旅游</h1>
+                <p>发现天府之国的魅力</p>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="/">首页</a></li>
+                    <li><a href="/about-sichuan.html">关于四川</a></li>
+                    <li><a href="/all-spots.html">景点介绍</a></li>
+                    <li><a href="/travel-tips.html">旅游指南</a></li>
+                </ul>
+            </nav>
+            <div class="auth-links">
+                <a href="/login.html">登录</a>
+                <a href="/register.html">注册</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="spot-detail" id="spotDetail">
+        </div>
+        <div class="favorite-section" id="favoriteSection">
+        </div>
+    </main>
+
+    <footer>
+        <p>2026四川旅游景点推荐，四川欢迎您</p>
+    </footer>
+
+    <script src="common.js"></script>
+    <script>
+        let currentSpotId = null;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            updateAuthLinks();
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            currentSpotId = urlParams.get('id');
+            
+            if (!currentSpotId) {
+                document.getElementById('spotDetail').innerHTML = '<p style="text-align: center; padding: 40px;">景点ID参数缺失</p>';
+                return;
+            }
+
+            const spot = await fetchSpotById(currentSpotId);
+            
+            if (!spot) {
+                document.getElementById('spotDetail').innerHTML = '<p style="text-align: center; padding: 40px;">景点不存在</p>';
+                return;
+            }
+
+            renderSpotDetail(spot);
+            await renderFavoriteSection();
+        });
+
+        function renderSpotDetail(spot) {
+            const detail = document.getElementById('spotDetail');
+            
+            detail.innerHTML = `
+                <div class="spot-header">
+                    <img src="${spot.image || 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=sichuan%20beautiful%20scenery&image_size=landscape_16_9'}" alt="${spot.name}">
+                    <div class="spot-meta">
+                        <h2>${spot.name}</h2>
+                        <div>
+                            <span class="tag">${spot.season || '四季皆宜'}</span>
+                            <span class="tag">${spot.city || '四川'}</span>
+                        </div>
+                        <p>${spot.description || '暂无简介'}</p>
+                        <div class="info-item">
+                            <span>门票价格:</span>
+                            <span>¥${spot.price || 0}</span>
+                        </div>
+                        <div class="info-item">
+                            <span>开放时间:</span>
+                            <span>${spot.open_time || '暂无信息'}</span>
+                        </div>
+                        <a href="/all-spots.html" class="btn" style="margin-top: 20px;">返回景点列表</a>
+                    </div>
+                </div>
+                <div class="spot-description">
+                    <h3>景点介绍</h3>
+                    <p>${spot.description || '暂无详细介绍'}</p>
+                </div>
+                ${spot.guide ? `
+                <div class="spot-description" style="margin-top: 20px;">
+                    <h3>交通指南</h3>
+                    <p>${spot.guide}</p>
+                </div>
+                ` : ''}
+                ${spot.tips ? `
+                <div class="spot-description" style="margin-top: 20px;">
+                    <h3>旅游贴士</h3>
+                    <p>${spot.tips}</p>
+                </div>
+                ` : ''}
+            `;
+        }
+
+        async function renderFavoriteSection() {
+            const section = document.getElementById('favoriteSection');
+            const user = getCurrentUser();
+            const favoriteData = await fetchSpotFavorite(currentSpotId);
+            
+            const favoriteCount = favoriteData ? favoriteData.count || 0 : 0;
+            const isFavorited = favoriteData ? favoriteData.is_favorited || false : false;
+
+            if (user) {
+                section.innerHTML = `
+                    <h3>收藏</h3>
+                    <div class="favorite-count">共 ${favoriteCount} 人收藏</div>
+                    <button class="favorite-btn ${isFavorited ? 'filled' : ''}" onclick="handleFavorite()">
+                        <span>${isFavorited ? '♥' : '♡'}</span>
+                        <span>${isFavorited ? '已收藏' : '收藏景点'}</span>
+                    </button>
+                `;
+            } else {
+                section.innerHTML = `
+                    <h3>收藏</h3>
+                    <div class="favorite-count">共 ${favoriteCount} 人收藏</div>
+                    <div class="login-prompt">
+                        <p>请先<a href="/login.html">登录</a>后收藏景点</p>
+                    </div>
+                `;
+            }
+        }
+
+        async function handleFavorite() {
+            const user = getCurrentUser();
+            if (!user) {
+                alert('请先登录');
+                return;
+            }
+
+            const favoriteData = await fetchSpotFavorite(currentSpotId);
+            const isFavorited = favoriteData ? favoriteData.is_favorited || false : false;
+
+            if (isFavorited) {
+                const response = await deleteFavoriteBySpot(currentSpotId);
+                if (response && response.success) {
+                    alert('取消收藏成功！');
+                    await renderFavoriteSection();
+                } else {
+                    alert(response?.message || '取消收藏失败，请重试');
+                }
+            } else {
+                const response = await addFavorite(currentSpotId);
+                if (response && response.success) {
+                    alert('收藏成功！');
+                    await renderFavoriteSection();
+                } else {
+                    alert(response?.message || '收藏失败，请重试');
+                }
+            }
+        }
+
+        async function deleteFavoriteBySpot(spotId) {
+            try {
+                return await removeFavoriteBySpot(spotId);
+            } catch (error) {
+                console.error('取消收藏失败:', error);
+                return { success: false, message: '取消收藏失败' };
+            }
+        }
+    </script>
+</body>
+</html>

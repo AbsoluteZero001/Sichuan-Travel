@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图片上传 - 四川旅游</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .upload-container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 40px;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .upload-container h2 {
+            text-align: center;
+            color: #4a90c2;
+            margin-bottom: 30px;
+        }
+        .upload-area {
+            border: 3px dashed #ddd;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+        .upload-area:hover, .upload-area.dragover {
+            border-color: #4a90c2;
+            background-color: #f8fcff;
+        }
+        .upload-area i {
+            font-size: 60px;
+            color: #4a90c2;
+            margin-bottom: 15px;
+        }
+        .upload-area p {
+            color: #666;
+            font-size: 16px;
+        }
+        #fileInput {
+            display: none;
+        }
+        .upload-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #4a90c2, #357abd);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .upload-btn:hover {
+            transform: scale(1.02);
+        }
+        .upload-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+        }
+        .result.success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+        .result.error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+        .result img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+        .result input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            color: #4a90c2;
+            margin-top: 10px;
+        }
+        .copy-btn {
+            background-color: #4a90c2;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .copy-btn:hover {
+            background-color: #357abd;
+        }
+        .image-list {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid #eee;
+        }
+        .image-list h3 {
+            color: #4a90c2;
+            margin-bottom: 20px;
+        }
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+        .image-item {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            aspect-ratio: 1;
+        }
+        .image-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .image-item .delete-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: rgba(255,0,0,0.8);
+            color: white;
+            border: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .image-item .url-text {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: rgba(0,0,0,0.6);
+            color: white;
+            font-size: 10px;
+            padding: 5px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .tips {
+            background-color: #e8f4fc;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        .tips h4 {
+            color: #4a90c2;
+            margin-bottom: 10px;
+        }
+        .tips ul {
+            margin: 0;
+            padding-left: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+        .tips ul li {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>四川旅游</h1>
+                <p>发现天府之国的魅力</p>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="/">首页</a></li>
+                    <li><a href="/about-sichuan.html">关于四川</a></li>
+                    <li><a href="/all-spots.html">景点介绍</a></li>
+                    <li><a href="/travel-tips.html">旅游指南</a></li>
+                    <li><a href="/image-upload.html">图片管理</a></li>
+                </ul>
+            </nav>
+            <div class="auth-links">
+                <a href="/login.html">登录</a>
+                <a href="/register.html">注册</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="upload-container">
+        <h2>📷 图片上传</h2>
+        
+        <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+            <i>🖼️</i>
+            <p>点击或拖拽图片到此处上传</p>
+            <p style="font-size: 12px; color: #999; margin-top: 5px;">支持格式：png、jpg、jpeg、gif</p>
+        </div>
+        
+        <input type="file" id="fileInput" accept="image/*" onchange="handleFileSelect(event)">
+        
+        <button class="upload-btn" id="uploadBtn" onclick="uploadFile()" disabled>上传图片</button>
+        
+        <div class="result" id="result"></div>
+        
+        <div class="image-list">
+            <h3>📁 已上传图片</h3>
+            <div class="image-grid" id="imageGrid"></div>
+        </div>
+        
+        <div class="tips">
+            <h4>💡 使用说明</h4>
+            <ul>
+                <li>上传图片后会生成一个URL，如：<code>/images/xxx.jpg</code></li>
+                <li>将此URL填入景点编辑页面的图片字段即可显示图片</li>
+                <li>也可以直接在网页中使用：<code>&lt;img src="/images/xxx.jpg"&gt;</code></li>
+                <li>建议图片大小不超过2MB，格式为png或jpg</li>
+            </ul>
+        </div>
+    </div>
+
+    <footer>
+        <p>2026四川旅游景点推荐，四川欢迎您</p>
+    </footer>
+
+    <script>
+        let selectedFile = null;
+
+        document.getElementById('uploadArea').addEventListener('dragover', (e) => {
+            e.preventDefault();
+            document.getElementById('uploadArea').classList.add('dragover');
+        });
+
+        document.getElementById('uploadArea').addEventListener('dragleave', () => {
+            document.getElementById('uploadArea').classList.remove('dragover');
+        });
+
+        document.getElementById('uploadArea').addEventListener('drop', (e) => {
+            e.preventDefault();
+            document.getElementById('uploadArea').classList.remove('dragover');
+            if (e.dataTransfer.files.length > 0) {
+                selectedFile = e.dataTransfer.files[0];
+                document.getElementById('uploadBtn').disabled = false;
+                alert(`已选择文件：${selectedFile.name}`);
+            }
+        });
+
+        function handleFileSelect(event) {
+            if (event.target.files.length > 0) {
+                selectedFile = event.target.files[0];
+                document.getElementById('uploadBtn').disabled = false;
+            }
+        }
+
+        async function uploadFile() {
+            if (!selectedFile) return;
+
+            const btn = document.getElementById('uploadBtn');
+            const result = document.getElementById('result');
+            
+            btn.disabled = true;
+            btn.textContent = '上传中...';
+            result.style.display = 'none';
+
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+
+            try {
+                const response = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    result.className = 'result success';
+                    result.innerHTML = `
+                        <p style="color: #155724;">✅ 上传成功！</p>
+                        <img src="${data.url}" alt="上传的图片">
+                        <input type="text" value="${data.url}" id="imageUrl" readonly>
+                        <button class="copy-btn" onclick="copyUrl()">复制链接</button>
+                    `;
+                } else {
+                    result.className = 'result error';
+                    result.innerHTML = `<p style="color: #721c24;">❌ ${data.message}</p>`;
+                }
+            } catch (error) {
+                result.className = 'result error';
+                result.innerHTML = `<p style="color: #721c24;">❌ 上传失败：${error.message}</p>`;
+            } finally {
+                btn.textContent = '上传图片';
+                selectedFile = null;
+                document.getElementById('fileInput').value = '';
+            }
+        }
+
+        function copyUrl() {
+            const input = document.getElementById('imageUrl');
+            input.select();
+            document.execCommand('copy');
+            alert('链接已复制到剪贴板！');
+        }
+
+        async function loadImages() {
+            try {
+                const response = await fetch('/api/images');
+                const data = await response.json();
+                
+                const grid = document.getElementById('imageGrid');
+                if (data.success && data.images.length > 0) {
+                    grid.innerHTML = data.images.map(img => `
+                        <div class="image-item">
+                            <img src="${img.url}" alt="${img.filename}">
+                            <div class="url-text">${img.url}</div>
+                            <button class="delete-btn" onclick="deleteImage('${img.filename}')">×</button>
+                        </div>
+                    `).join('');
+                } else {
+                    grid.innerHTML = '<p style="text-align: center; color: #999; grid-column: 1/-1;">暂无图片</p>';
+                }
+            } catch (error) {
+                console.error('加载图片失败:', error);
+            }
+        }
+
+        async function deleteImage(filename) {
+            if (!confirm(`确定要删除图片 ${filename} 吗？`)) return;
+            
+            try {
+                const response = await fetch(`/api/images/${filename}`, {
+                    method: 'DELETE'
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    loadImages();
+                } else {
+                    alert('删除失败：' + data.message);
+                }
+            } catch (error) {
+                alert('删除失败：' + error.message);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadImages();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>旅游指南 - 四川旅游</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .tip-section {
+            padding: 60px 0;
+            background-color: white;
+        }
+        .tip-section:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        .chat-container {
+            position: fixed;
+            bottom: 0;
+            right: 30px;
+            width: 400px;
+            max-height: 600px;
+            background-color: white;
+            border-radius: 15px 15px 0 0;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease;
+        }
+        .chat-container.collapsed {
+            transform: translateY(calc(100% - 50px));
+        }
+        .chat-header {
+            background: linear-gradient(135deg, #4a90c2, #357abd);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 15px 15px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            height: 50px;
+            box-sizing: border-box;
+        }
+        .chat-header h4 {
+            margin: 0;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .chat-header .chat-icon {
+            font-size: 20px;
+        }
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            max-height: 450px;
+        }
+        .chat-message {
+            margin-bottom: 15px;
+            display: flex;
+            gap: 10px;
+        }
+        .chat-message.user {
+            flex-direction: row-reverse;
+        }
+        .chat-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+            background: linear-gradient(135deg, #4a90c2, #357abd);
+            color: white;
+        }
+        .chat-content {
+            max-width: 75%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+        .chat-message.bot .chat-content {
+            background-color: #f0f7ff;
+            color: #333;
+            border-bottom-left-radius: 4px;
+        }
+        .chat-message.user .chat-content {
+            background: linear-gradient(135deg, #4a90c2, #357abd);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+        .chat-input-area {
+            padding: 12px 15px;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 10px;
+            background-color: #fafafa;
+        }
+        .chat-input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .chat-input:focus {
+            border-color: #4a90c2;
+        }
+        .chat-send-btn {
+            background: linear-gradient(135deg, #4a90c2, #357abd);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: transform 0.2s;
+        }
+        .chat-send-btn:hover {
+            transform: scale(1.05);
+        }
+        .chat-send-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .chat-typing {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #999;
+            font-size: 13px;
+            padding: 5px 0;
+        }
+        .chat-typing span {
+            width: 6px;
+            height: 6px;
+            background-color: #999;
+            border-radius: 50%;
+            animation: typing 1.4s infinite ease-in-out both;
+        }
+        .chat-typing span:nth-child(1) { animation-delay: -0.32s; }
+        .chat-typing span:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes typing {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+        .chat-faq-tags {
+            padding: 10px 15px;
+            border-top: 1px solid #eee;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            background-color: #f8f9fa;
+        }
+        .chat-faq-tag {
+            background-color: white;
+            border: 1px solid #e0e0e0;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            color: #4a90c2;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .chat-faq-tag:hover {
+            background-color: #f0f7ff;
+            border-color: #4a90c2;
+        }
+        .tip-header {
+            text-align: center;
+            padding: 80px 0;
+            background: linear-gradient(rgba(74, 144, 194, 0.9), rgba(74, 144, 194, 0.7)),
+                        url('https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1200');
+            background-size: cover;
+            background-position: center;
+            color: white;
+        }
+        .tip-header h2 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+        .tip-header p {
+            font-size: 18px;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .tip-content {
+            display: flex;
+            gap: 40px;
+            align-items: flex-start;
+        }
+        .tip-content.reverse {
+            flex-direction: row-reverse;
+        }
+        .tip-text {
+            flex: 1;
+        }
+        .tip-text h3 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #4a90c2;
+        }
+        .tip-text p {
+            font-size: 15px;
+            color: #666;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+        .tip-image {
+            flex: 1;
+        }
+        .tip-image img {
+            width: 100%;
+            height: 350px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+        .season-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .season-card {
+            background-color: #e8f4fc;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .season-card h4 {
+            color: #4a90c2;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        .season-card p {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+        .season-card ul {
+            list-style: none;
+            padding-left: 0;
+            text-align: left;
+        }
+        .season-card ul li {
+            padding: 5px 0;
+            font-size: 13px;
+            color: #555;
+            border-bottom: 1px dashed #b8d4ea;
+        }
+        .season-card ul li:last-child {
+            border-bottom: none;
+        }
+        .transport-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .transport-card {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .transport-card h4 {
+            color: #4a90c2;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+        .transport-card p {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+        .transport-card .icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+            color: #4a90c2;
+        }
+        .tips-list {
+            background-color: #e8f4fc;
+            padding: 30px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        .tips-list h4 {
+            color: #4a90c2;
+            margin-bottom: 20px;
+        }
+        .tips-list ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .tips-list ul li {
+            padding: 12px 0;
+            border-bottom: 1px dashed #b8d4ea;
+            color: #555;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+        }
+        .tips-list ul li:last-child {
+            border-bottom: none;
+        }
+        .tips-list ul li::before {
+            content: '✓';
+            color: #4a90c2;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .route-card {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .route-card h4 {
+            color: #4a90c2;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+        .route-card .route-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .route-card .route-info span {
+            background-color: #e8f4fc;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            color: #4a90c2;
+        }
+        .route-card p {
+            color: #666;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>四川旅游</h1>
+                <p>发现天府之国的魅力</p>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="/">首页</a></li>
+                    <li><a href="/about-sichuan.html">关于四川</a></li>
+                    <li><a href="/all-spots.html">景点介绍</a></li>
+                    <li><a href="/travel-tips.html">旅游指南</a></li>
+                </ul>
+            </nav>
+            <div class="auth-links">
+                <a href="/login.html">登录</a>
+                <a href="/register.html">注册</a>
+            </div>
+        </div>
+    </header>
+
+    <section class="tip-header">
+        <h2>四川旅游指南</h2>
+        <p>为您提供最全面的四川旅游攻略，帮助您规划完美的旅程</p>
+    </section>
+
+    <section class="tip-section">
+        <div class="container">
+            <div class="tip-content">
+                <div class="tip-text">
+                    <h3>最佳旅游时间</h3>
+                    <p>四川气候多样，不同季节有不同的美景。春季花开遍野，夏季清凉避暑，秋季红叶满山，冬季冰雪奇观。选择合适的时间前往，可以让您的旅途更加精彩。</p>
+                </div>
+                <div class="tip-image">
+                    <img src="https://images.unsplash.com/photo-1508739773434-c26b3d09e071?w=800" alt="四季风景">
+                </div>
+            </div>
+            <div class="season-grid">
+                <div class="season-card">
+                    <h4>春季 (3-5月)</h4>
+                    <p>气温适宜，花开遍野</p>
+                    <ul>
+                        <li>成都 - 赏花踏青</li>
+                        <li>都江堰 - 清明放水节</li>
+                        <li>乐山大佛 - 春光明媚</li>
+                        <li>嘉阳小火车 - 油菜花</li>
+                    </ul>
+                </div>
+                <div class="season-card">
+                    <h4>夏季 (6-8月)</h4>
+                    <p>清凉避暑，草原花海</p>
+                    <ul>
+                        <li>峨眉山 - 避暑胜地</li>
+                        <li>青城山 - 清凉幽静</li>
+                        <li>四姑娘山 - 花海盛开</li>
+                        <li>若尔盖草原 - 最美季节</li>
+                    </ul>
+                </div>
+                <div class="season-card">
+                    <h4>秋季 (9-11月)</h4>
+                    <p>红叶满山，色彩斑斓</p>
+                    <ul>
+                        <li>九寨沟 - 彩林倒映</li>
+                        <li>稻城亚丁 - 金色秋天</li>
+                        <li>新都桥 - 摄影家天堂</li>
+                        <li>米亚罗 - 红叶长廊</li>
+                    </ul>
+                </div>
+                <div class="season-card">
+                    <h4>冬季 (12-2月)</h4>
+                    <p>冰雪世界，温泉养生</p>
+                    <ul>
+                        <li>海螺沟 - 冰川温泉</li>
+                        <li>西岭雪山 - 滑雪胜地</li>
+                        <li>峨眉山 - 雪景佛光</li>
+                        <li>瓦屋山 - 冰雪童话</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="tip-section">
+        <div class="container">
+            <div class="tip-content reverse">
+                <div class="tip-text">
+                    <h3>交通指南</h3>
+                    <p>四川交通便利，拥有发达的航空、铁路和公路网络。成都作为交通枢纽，可以方便地到达省内各个景点。</p>
+                </div>
+                <div class="tip-image">
+                    <img src="/images/jt.jpg" alt="交通">
+                </div>
+            </div>
+            <div class="transport-grid">
+                <div class="transport-card">
+                    <div class="icon">✈️</div>
+                    <h4>航空</h4>
+                    <p>成都双流国际机场和天府国际机场是主要入境口岸，开通了国内外多条航线。省内还有绵阳、乐山、宜宾、泸州、稻城亚丁等多个支线机场。</p>
+                </div>
+                <div class="transport-card">
+                    <div class="icon">🚄</div>
+                    <h4>铁路</h4>
+                    <p>成都是西南地区的铁路枢纽，成渝高铁、成贵高铁、西成高铁等线路四通八达。成都东站、成都南站、成都西站方便前往省内各城市。</p>
+                </div>
+                <div class="transport-card">
+                    <div class="icon">🚗</div>
+                    <h4>公路</h4>
+                    <p>四川省高速公路网发达，主要景点都有高速公路连接。成都各大客运站有发往省内各地的班车，方便快捷。</p>
+                </div>
+            </div>
+            <div class="tips-list">
+                <h4>出行小贴士</h4>
+                <ul>
+                    <li>成都双流国际机场距离市区约16公里，有机场大巴和地铁直达</li>
+                    <li>成都天府国际机场距离市区约50公里，有地铁18号线和机场大巴</li>
+                    <li>景区间交通建议选择旅游专线或包车</li>
+                    <li>高原地区建议选择飞机或包车，避免长时间车程</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="tip-section">
+        <div class="container">
+            <div class="tip-content">
+                <div class="tip-text">
+                    <h3>旅游路线推荐</h3>
+                    <p>四川旅游资源丰富，根据您的时间和兴趣，我们为您推荐几条经典路线：</p>
+                </div>
+                <div class="tip-image">
+                    <img src="/images/lylx.jpg" alt="旅游路线">
+                </div>
+            </div>
+            <div class="route-card">
+                <h4>经典环线 (6-8天)</h4>
+                <div class="route-info">
+                    <span>成都</span>
+                    <span>都江堰</span>
+                    <span>九寨沟</span>
+                    <span>黄龙</span>
+                    <span>返回成都</span>
+                </div>
+                <p>这条路线涵盖了四川最著名的景点，从成都出发，游览都江堰水利工程，然后前往九寨沟和黄龙，欣赏世界自然遗产的绝美风光。适合第一次来四川的游客。</p>
+            </div>
+            <div class="route-card">
+                <h4>文化之旅 (4-5天)</h4>
+                <div class="route-info">
+                    <span>成都</span>
+                    <span>乐山</span>
+                    <span>峨眉山</span>
+                    <span>返回成都</span>
+                </div>
+                <p>这条路线以文化体验为主，游览乐山大佛和峨眉山，感受佛教文化的博大精深，同时可以品尝地道的乐山美食。</p>
+            </div>
+            <div class="route-card">
+                <h4>高原探秘 (7-10天)</h4>
+                <div class="route-info">
+                    <span>成都</span>
+                    <span>康定</span>
+                    <span>新都桥</span>
+                    <span>稻城亚丁</span>
+                    <span>返回成都</span>
+                </div>
+                <p>这条路线适合喜欢自然风光的游客，沿途可以欣赏到壮丽的高原风光，新都桥的秋色、稻城亚丁的神山圣湖，都令人终身难忘。</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="tip-section">
+        <div class="container">
+            <div class="tip-content reverse">
+                <div class="tip-text">
+                    <h3>实用贴士</h3>
+                    <p>出行前做好充分准备，让您的旅途更加顺利愉快。</p>
+                </div>
+                <div class="tip-image">
+                    <img src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800" alt="旅行准备">
+                </div>
+            </div>
+            <div class="tips-list">
+                <h4>高原反应预防</h4>
+                <ul>
+                    <li>提前一周开始服用红景天，增强身体适应能力</li>
+                    <li>抵达高原后不要剧烈运动，给身体2-3天适应时间</li>
+                    <li>多喝水，保持身体水分</li>
+                    <li>避免饮酒和吸烟</li>
+                    <li>随身携带氧气瓶以备不时之需</li>
+                </ul>
+            </div>
+            <div class="tips-list" style="margin-top: 20px;">
+                <h4>衣物准备</h4>
+                <ul>
+                    <li>高原地区昼夜温差大，无论何时前往都需携带保暖衣物</li>
+                    <li>夏季前往需携带轻薄外套和雨具</li>
+                    <li>冬季前往需携带羽绒服、手套、围巾等防寒用品</li>
+                    <li>登山鞋或舒适的运动鞋是必备</li>
+                </ul>
+            </div>
+            <div class="tips-list" style="margin-top: 20px;">
+                <h4>其他注意事项</h4>
+                <ul>
+                    <li>四川美食以麻辣为主，肠胃敏感者建议适量食用</li>
+                    <li>部分景区海拔较高，紫外线强，需做好防晒措施</li>
+                    <li>尊重当地少数民族的风俗习惯</li>
+                    <li>提前预订景区门票和酒店，特别是旅游旺季</li>
+                    <li>随身携带身份证等有效证件</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>2026四川旅游景点推荐，四川欢迎您</p>
+    </footer>
+
+    <div class="chat-container collapsed" id="chatContainer">
+        <div class="chat-header" onclick="toggleChat()">
+            <h4><span class="chat-icon">🤖</span> 智能旅游助手</h4>
+            <span style="font-size: 20px;">▼</span>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <div class="chat-message bot">
+                <div class="chat-avatar">🤖</div>
+                <div class="chat-content">您好！我是您的四川旅游助手。关于四川旅游的任何问题都可以问我，比如最佳旅游时间、交通指南、旅游路线等。</div>
+            </div>
+        </div>
+        <div class="chat-faq-tags">
+            <span class="chat-faq-tag" onclick="sendFaq('最佳旅游时间')">最佳旅游时间</span>
+            <span class="chat-faq-tag" onclick="sendFaq('怎么去四川')">交通指南</span>
+            <span class="chat-faq-tag" onclick="sendFaq('推荐旅游路线')">旅游路线</span>
+            <span class="chat-faq-tag" onclick="sendFaq('高原反应')">高原反应预防</span>
+            <span class="chat-faq-tag" onclick="sendFaq('四川美食')">四川美食</span>
+            <span class="chat-faq-tag" onclick="sendFaq('注意事项')">注意事项</span>
+        </div>
+        <div class="chat-input-area">
+            <input type="text" class="chat-input" id="chatInput" placeholder="输入您的问题..." onkeypress="handleChatKeyPress(event)">
+            <button class="chat-send-btn" id="chatSendBtn" onclick="sendMessage()">发送</button>
+        </div>
+    </div>
+
+    <script src="common.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            updateAuthLinks();
+        });
+
+        let isChatOpen = false;
+        let isTyping = false;
+
+        function toggleChat() {
+            const chatContainer = document.getElementById('chatContainer');
+            isChatOpen = !isChatOpen;
+            if (isChatOpen) {
+                chatContainer.classList.remove('collapsed');
+            } else {
+                chatContainer.classList.add('collapsed');
+            }
+        }
+
+        function handleChatKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        function sendFaq(question) {
+            document.getElementById('chatInput').value = question;
+            sendMessage();
+        }
+
+        function addMessage(text, isUser = false) {
+            const chatMessages = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-message ${isUser ? 'user' : 'bot'}`;
+            
+            if (!isUser) {
+                const avatar = document.createElement('div');
+                avatar.className = 'chat-avatar';
+                avatar.textContent = '🤖';
+                messageDiv.appendChild(avatar);
+            }
+            
+            const content = document.createElement('div');
+            content.className = 'chat-content';
+            content.innerHTML = text.replace(/\n/g, '<br>');
+            
+            messageDiv.appendChild(content);
+            chatMessages.appendChild(messageDiv);
+            
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function showTyping() {
+            const chatMessages = document.getElementById('chatMessages');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'chat-message bot';
+            typingDiv.id = 'typingIndicator';
+            
+            const avatar = document.createElement('div');
+            avatar.className = 'chat-avatar';
+            avatar.textContent = '🤖';
+            
+            const content = document.createElement('div');
+            content.className = 'chat-content';
+            content.innerHTML = '<div class="chat-typing"><span></span><span></span><span></span></div>';
+            
+            typingDiv.appendChild(avatar);
+            typingDiv.appendChild(content);
+            chatMessages.appendChild(typingDiv);
+            
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            isTyping = true;
+        }
+
+        function hideTyping() {
+            const typingIndicator = document.getElementById('typingIndicator');
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
+            isTyping = false;
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const sendBtn = document.getElementById('chatSendBtn');
+            const question = input.value.trim();
+            
+            if (!question || isTyping) return;
+            
+            input.value = '';
+            sendBtn.disabled = true;
+            
+            addMessage(question, true);
+            showTyping();
+            
+            try {
+                const response = await fetch('/api/ai/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ question: question })
+                });
+                
+                const data = await response.json();
+                
+                hideTyping();
+                
+                if (data.success) {
+                    addMessage(data.response);
+                } else {
+                    addMessage('抱歉，我暂时无法回答这个问题，请稍后再试。');
+                }
+            } catch (error) {
+                hideTyping();
+                addMessage('网络连接异常，请检查网络后重试。');
+            } finally {
+                sendBtn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>

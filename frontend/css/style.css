@@ -1,0 +1,681 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Microsoft YaHei', sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f0f8ff;
+}
+
+.container {
+    width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+header {
+    background-color: #4a90c2;
+    color: white;
+    padding: 10px 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    display: flex;
+    flex-direction: column;
+}
+
+.logo h1 {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.logo p {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+nav ul {
+    display: flex;
+    list-style: none;
+}
+
+nav ul li {
+    margin-left: 30px;
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.3s;
+}
+
+nav ul li a:hover {
+    color: #a8d5e8;
+}
+
+.auth-links {
+    display: flex;
+    align-items: center;
+}
+
+.auth-links a {
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+    margin-left: 20px;
+}
+
+.auth-links span {
+    margin-right: 10px;
+}
+
+.banner {
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+                url('https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=sichuan%20landscape%20mountains%20lake%20beautiful%20nature&image_size=landscape_16_9');
+    background-size: cover;
+    background-position: center;
+    height: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    text-align: center;
+}
+
+.banner h2 {
+    font-size: 36px;
+    margin-bottom: 15px;
+}
+
+.banner p {
+    font-size: 16px;
+    margin-bottom: 25px;
+    opacity: 0.9;
+}
+
+.btn {
+    display: inline-block;
+    padding: 12px 30px;
+    background-color: #4a90c2;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: background-color 0.3s;
+    border: none;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background-color: #3a7ab2;
+}
+
+.btn-secondary {
+    background-color: #6ab0d9;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+}
+
+.btn-favorite {
+    background-color: #f8f9fa;
+    color: #dc3545;
+    border: 1px solid #dc3545;
+}
+
+.btn-favorite:hover {
+    background-color: #ffebee;
+}
+
+.btn-favorite.filled {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-favorite.filled:hover {
+    background-color: #c82333;
+}
+
+.section {
+    padding: 60px 0;
+    background-color: white;
+}
+
+.section-title {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.section-title h3 {
+    font-size: 28px;
+    color: #4a90c2;
+    margin-bottom: 10px;
+}
+
+.section-title .line {
+    width: 60px;
+    height: 3px;
+    background-color: #4a90c2;
+    margin: 0 auto;
+}
+
+.features {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30px;
+}
+
+.feature-item {
+    background-color: #f8fafc;
+    padding: 30px;
+    text-align: center;
+    border-radius: 10px;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.feature-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.feature-item h4 {
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: #4a90c2;
+}
+
+.feature-item p {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.5;
+}
+
+.spots-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+}
+
+.spot-card {
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.spot-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.spot-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.spot-card .spot-info {
+    padding: 20px;
+}
+
+.spot-card .spot-info h4 {
+    font-size: 20px;
+    margin-bottom: 8px;
+    color: #4a90c2;
+}
+
+.spot-card .spot-info p {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.5;
+    margin-bottom: 15px;
+}
+
+.spot-card .spot-info .btn {
+    padding: 8px 20px;
+    font-size: 14px;
+}
+
+.travel-tips {
+    display: flex;
+    gap: 40px;
+}
+
+.travel-tips .tips-content {
+    flex: 1;
+}
+
+.travel-tips .tips-content h4 {
+    font-size: 20px;
+    margin-bottom: 15px;
+    color: #4a90c2;
+}
+
+.travel-tips .tips-content p {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.8;
+    margin-bottom: 20px;
+}
+
+.travel-tips .tips-image {
+    flex: 1;
+}
+
+.travel-tips .tips-image img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.search-bar {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 40px;
+}
+
+.search-bar input {
+    width: 400px;
+    padding: 12px 20px;
+    border: 2px solid #ddd;
+    border-radius: 5px 0 0 5px;
+    font-size: 16px;
+    outline: none;
+}
+
+.search-bar input:focus {
+    border-color: #4a90c2;
+}
+
+.search-bar button {
+    padding: 12px 30px;
+    background-color: #4a90c2;
+    color: white;
+    border: none;
+    border-radius: 0 5px 5px 0;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.search-bar button:hover {
+    background-color: #3a7ab2;
+}
+
+.form-container {
+    max-width: 450px;
+    margin: 50px auto;
+    background-color: white;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.form-container h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #4a90c2;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #333;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+    outline: none;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    border-color: #4a90c2;
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.form-group .error {
+    color: #dc3545;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+.form-container p {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.form-container p a {
+    color: #4a90c2;
+    text-decoration: none;
+}
+
+.form-container p a:hover {
+    text-decoration: underline;
+}
+
+.spot-detail {
+    padding: 40px 0;
+}
+
+.spot-detail .spot-header {
+    display: flex;
+    gap: 40px;
+    margin-bottom: 40px;
+}
+
+.spot-detail .spot-header img {
+    width: 600px;
+    height: 400px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.spot-detail .spot-header .spot-meta {
+    flex: 1;
+}
+
+.spot-detail .spot-header .spot-meta h2 {
+    font-size: 32px;
+    margin-bottom: 20px;
+    color: #4a90c2;
+}
+
+.spot-detail .spot-header .spot-meta .tag {
+    display: inline-block;
+    padding: 5px 15px;
+    background-color: #e8f4fc;
+    color: #4a90c2;
+    border-radius: 20px;
+    font-size: 14px;
+    margin-right: 10px;
+    margin-bottom: 15px;
+}
+
+.spot-detail .spot-header .spot-meta p {
+    font-size: 15px;
+    color: #666;
+    line-height: 1.8;
+    margin-bottom: 20px;
+}
+
+.spot-detail .spot-header .spot-meta .info-item {
+    display: flex;
+    margin-bottom: 10px;
+}
+
+.spot-detail .spot-header .spot-meta .info-item span:first-child {
+    width: 80px;
+    color: #888;
+}
+
+.spot-detail .spot-description {
+    background-color: #f8fafc;
+    padding: 30px;
+    border-radius: 10px;
+}
+
+.spot-detail .spot-description h3 {
+    font-size: 20px;
+    margin-bottom: 20px;
+    color: #4a90c2;
+}
+
+.spot-detail .spot-description p {
+    font-size: 15px;
+    color: #666;
+    line-height: 1.8;
+}
+
+.admin-panel {
+    padding: 40px 0;
+}
+
+.admin-panel h2 {
+    margin-bottom: 30px;
+    color: #4a90c2;
+}
+
+.admin-panel .actions {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.admin-panel .actions .search-box {
+    display: flex;
+}
+
+.admin-panel .actions .search-box input {
+    padding: 8px 15px;
+    border: 2px solid #ddd;
+    border-radius: 5px 0 0 5px;
+    font-size: 14px;
+}
+
+.admin-panel .actions .search-box button {
+    padding: 8px 20px;
+    background-color: #4a90c2;
+    color: white;
+    border: none;
+    border-radius: 0 5px 5px 0;
+    cursor: pointer;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+table th,
+table td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+table th {
+    background-color: #4a90c2;
+    color: white;
+    font-weight: 500;
+}
+
+table tr:hover {
+    background-color: #f8fafc;
+}
+
+table td img {
+    width: 60px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+table .action-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+table .action-buttons .btn {
+    padding: 6px 12px;
+    font-size: 12px;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-content h3 {
+    margin-bottom: 20px;
+    color: #4a90c2;
+}
+
+.modal-content .close-btn {
+    float: right;
+    font-size: 24px;
+    cursor: pointer;
+    color: #999;
+}
+
+.modal-content .close-btn:hover {
+    color: #333;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.pagination a {
+    padding: 8px 15px;
+    margin: 0 5px;
+    border: 1px solid #ddd;
+    text-decoration: none;
+    color: #333;
+    border-radius: 5px;
+}
+
+.pagination a:hover,
+.pagination a.active {
+    background-color: #4a90c2;
+    color: white;
+    border-color: #4a90c2;
+}
+
+footer {
+    background-color: #4a90c2;
+    color: white;
+    text-align: center;
+    padding: 20px 0;
+    margin-top: 40px;
+}
+
+footer p {
+    font-size: 14px;
+}
+
+@media (max-width: 768px) {
+    .container {
+        width: 100%;
+    }
+
+    header .container {
+        flex-direction: column;
+    }
+
+    nav ul {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    nav ul li {
+        margin: 10px;
+    }
+
+    .banner h2 {
+        font-size: 28px;
+    }
+
+    .features {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .spots-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .travel-tips {
+        flex-direction: column;
+    }
+
+    .spot-detail .spot-header {
+        flex-direction: column;
+    }
+
+    .spot-detail .spot-header img {
+        width: 100%;
+        height: 250px;
+    }
+
+    .admin-panel .actions {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    table {
+        font-size: 12px;
+    }
+
+    table th,
+    table td {
+        padding: 10px;
+    }
+
+    .modal-content {
+        width: 90%;
+    }
+}
