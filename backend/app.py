@@ -190,4 +190,7 @@ def delete_image(filename):
 
 if __name__ == '__main__':
     init_db()
-    app.run(host='0.0.0.0', port=3000, debug=False)
+    # debug=True：本地开发时改 Python 代码会自动重启，无需手动；
+    # 改 .env（换 Key/模型）仍需手动重启一次，因为 .env 只在启动时读取。
+    # 注意：部署到公网服务器时请改回 debug=False。
+    app.run(host='0.0.0.0', port=3000, debug=True)

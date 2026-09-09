@@ -356,3 +356,169 @@ async function loadFavoriteMap(spotIds) {
     }
     return map;
 }
+
+/* ============ 全站旅游智能助手（右下角悬浮，所有页面自动加载） ============ */
+(function () {
+    const MAX_HISTORY_TURNS = 6;
+    let chatHistory = [];
+    let isTyping = false;
+
+    function initChatWidget() {
+        // 已存在则不重复注入
+        if (document.getElementById('chatContainer')) return;
+
+        const wrap = document.createElement('div');
+        wrap.className = 'chat-container collapsed';
+        wrap.id = 'chatContainer';
+        wrap.innerHTML = `
+            <div class="chat-header" id="chatHeader">
+                <h4><span class="chat-icon">🤖</span> 智能旅游助手</h4>
+                <span style="font-size: 20px;" id="chatToggleIcon">▼</span>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="chat-message bot">
+                    <div class="chat-avatar">🤖</div>
+                    <div class="chat-content">您好！我是您的四川旅游助手。关于四川旅游的任何问题都可以问我，比如最佳旅游时间、交通指南、旅游路线等。</div>
+                </div>
+            </div>
+            <div class="chat-faq-tags">
+                <span class="chat-faq-tag" data-q="最佳旅游时间">最佳旅游时间</span>
+                <span class="chat-faq-tag" data-q="怎么去四川">交通指南</span>
+                <span class="chat-faq-tag" data-q="推荐旅游路线">旅游路线</span>
+                <span class="chat-faq-tag" data-q="高原反应">高原反应预防</span>
+                <span class="chat-faq-tag" data-q="四川美食">四川美食</span>
+                <span class="chat-faq-tag" data-q="注意事项">注意事项</span>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" class="chat-input" id="chatInput" placeholder="输入您的问题...">
+                <button class="chat-send-btn" id="chatSendBtn">发送</button>
+            </div>
+        `;
+        document.body.appendChild(wrap);
+
+        const header = document.getElementById('chatHeader');
+        const input = document.getElementById('chatInput');
+        const sendBtn = document.getElementById('chatSendBtn');
+        const icon = document.getElementById('chatToggleIcon');
+
+        header.addEventListener('click', () => {
+            wrap.classList.toggle('collapsed');
+            icon.textContent = wrap.classList.contains('collapsed') ? '▼' : '▲';
+        });
+
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        sendBtn.addEventListener('click', () => sendMessage());
+
+        wrap.querySelectorAll('.chat-faq-tag').forEach((tag) => {
+            tag.addEventListener('click', () => {
+                input.value = tag.dataset.q;
+                sendMessage();
+            });
+        });
+    }
+
+    function addMessage(text, isUser) {
+        const box = document.getElementById('chatMessages');
+        const div = document.createElement('div');
+        div.className = `chat-message ${isUser ? 'user' : 'bot'}`;
+        if (!isUser) {
+            const avatar = document.createElement('div');
+            avatar.className = 'chat-avatar';
+            avatar.textContent = '🤖';
+            div.appendChild(avatar);
+        }
+        const content = document.createElement('div');
+        content.className = 'chat-content';
+        // 转义 HTML 防 XSS，再处理换行
+        const escaped = String(text)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/\n/g, '<br>');
+        content.innerHTML = escaped;
+        div.appendChild(content);
+        box.appendChild(div);
+        box.scrollTop = box.scrollHeight;
+    }
+
+    function showTyping() {
+        const box = document.getElementById('chatMessages');
+        const div = document.createElement('div');
+        div.className = 'chat-message bot';
+        div.id = 'typingIndicator';
+        div.innerHTML = `<div class="chat-avatar">🤖</div>
+            <div class="chat-content"><div class="chat-typing"><span></span><span></span><span></span></div></div>`;
+        box.appendChild(div);
+        box.scrollTop = box.scrollHeight;
+        isTyping = true;
+    }
+
+    function hideTyping() {
+        const t = document.getElementById('typingIndicator');
+        if (t) t.remove();
+        isTyping = false;
+    }
+
+    function setLoading(loading) {
+        const btn = document.getElementById('chatSendBtn');
+        const input = document.getElementById('chatInput');
+        if (btn) {
+            btn.disabled = !!loading;
+            btn.textContent = loading ? '回答中...' : '发送';
+        }
+        if (input) input.disabled = !!loading;
+    }
+
+    async function sendMessage() {
+        const input = document.getElementById('chatInput');
+        const question = input.value.trim();
+        if (!question || isTyping) return; // 空问题 / 防重复提交
+
+        input.value = '';
+        setLoading(true);
+        addMessage(question, true);
+        chatHistory.push({ role: 'user', content: question });
+        showTyping();
+
+        try {
+            const resp = await fetch('/api/ai/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    question: question,
+                    history: chatHistory.slice(-MAX_HISTORY_TURNS * 2)
+                })
+            });
+            const data = await resp.json();
+            hideTyping();
+
+            const answer = (data && (data.answer || data.response)) || '';
+            if (data && data.success && answer) {
+                addMessage(answer, false);
+                chatHistory.push({ role: 'assistant', content: answer });
+                while (chatHistory.length > MAX_HISTORY_TURNS * 2) chatHistory.shift();
+            } else {
+                addMessage((data && data.message) || '抱歉，我暂时无法回答这个问题，请稍后再试。', false);
+                chatHistory.pop(); // 失败回滚，不污染历史
+            }
+        } catch (e) {
+            hideTyping();
+            addMessage('网络连接异常，请检查后端服务是否启动后重试。', false);
+            chatHistory.pop();
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initChatWidget);
+    } else {
+        initChatWidget();
+    }
+})();
