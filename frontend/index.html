@@ -29,9 +29,17 @@
     </header>
 
     <section class="banner">
-        <h2>2026四川旅游景点推荐,四川欢迎您</h2>
-        <p>从雪山到盆地，从熊猫到火锅，体验不一样的四川</p>
-        <a href="/all-spots.html" class="btn">开始探索</a>
+        <div class="banner-carousel" id="bannerCarousel">
+            <div class="banner-slides" id="bannerSlides"></div>
+            <div class="banner-dots" id="bannerDots"></div>
+            <button class="banner-arrow banner-arrow-left" id="bannerPrev" aria-label="上一张" type="button">&lsaquo;</button>
+            <button class="banner-arrow banner-arrow-right" id="bannerNext" aria-label="下一张" type="button">&rsaquo;</button>
+        </div>
+        <div class="banner-content">
+            <h2>2026四川旅游景点推荐,四川欢迎您</h2>
+            <p>从雪山到盆地，从熊猫到火锅，体验不一样的四川</p>
+            <a href="/all-spots.html" class="btn">开始探索</a>
+        </div>
     </section>
 
     <section class="section" id="spots">
@@ -88,6 +96,12 @@
     <script>
         let currentKeyword = '';
         let favoriteStatus = {};
+        let bannerState = {
+            images: [],
+            index: 0,
+            timer: null,
+            interval: 4000
+        };
 
         document.addEventListener('DOMContentLoaded', async () => {
             updateAuthLinks();
@@ -162,6 +176,110 @@
                 </div>
                 `;
             }).join('');
+
+            initBannerCarousel(uniqueSpots);
+        }
+
+        // ========== 首页 Banner 轮播 ==========
+        const FALLBACK_BANNER_IMG = 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=sichuan%20beautiful%20scenery&image_size=landscape_16_9';
+
+        function initBannerCarousel(spots) {
+            const carousel = document.getElementById('bannerCarousel');
+            const slidesEl = document.getElementById('bannerSlides');
+            const dotsEl = document.getElementById('bannerDots');
+            if (!carousel || !slidesEl || !dotsEl) return;
+
+            // 收集景点图片
+            const images = (spots || [])
+                .map(s => (s && s.image) ? { url: s.image, name: s.name || '', id: s.id } : null)
+                .filter(Boolean)
+                .filter((item, i, arr) => arr.findIndex(x => x.url === item.url) === i); // 同 URL 去重
+
+            if (images.length === 0) {
+                images.push({ url: FALLBACK_BANNER_IMG, name: '四川旅游', id: null });
+            }
+
+            bannerState.images = images;
+            bannerState.index = 0;
+
+            // 渲染 slides
+            slidesEl.innerHTML = images.map((img, i) => `
+                <div class="banner-slide ${i === 0 ? 'active' : ''}" data-index="${i}" style="background-image: url('${img.url}');">
+                    ${img.name ? `<span class="banner-slide-caption">${img.name}</span>` : ''}
+                </div>
+            `).join('');
+
+            // 渲染 dots（仅 2 张以上才显示）
+            if (images.length > 1) {
+                dotsEl.innerHTML = images.map((_, i) => `
+                    <span class="banner-dot ${i === 0 ? 'active' : ''}" data-index="${i}"></span>
+                `).join('');
+                dotsEl.querySelectorAll('.banner-dot').forEach(dot => {
+                    dot.addEventListener('click', () => goToBannerSlide(Number(dot.dataset.index)));
+                });
+            } else {
+                dotsEl.innerHTML = '';
+            }
+
+            bindBannerArrows();
+            startBannerAutoPlay();
+        }
+
+        function bindBannerArrows() {
+            const prev = document.getElementById('bannerPrev');
+            const next = document.getElementById('bannerNext');
+            const carousel = document.getElementById('bannerCarousel');
+            if (!prev || !next || !carousel) return;
+
+            prev.onclick = () => { goToBannerSlide(bannerState.index - 1); resetBannerAutoPlay(); };
+            next.onclick = () => { goToBannerSlide(bannerState.index + 1); resetBannerAutoPlay(); };
+
+            // 鼠标悬停暂停，移开恢复
+            carousel.onmouseenter = stopBannerAutoPlay;
+            carousel.onmouseleave = startBannerAutoPlay;
+
+            // 键盘左右切换（仅当 banner 在视口内时不影响其他表单）
+            document.addEventListener('keydown', (e) => {
+                const tag = (e.target.tagName || '').toLowerCase();
+                if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
+                if (e.key === 'ArrowLeft') { goToBannerSlide(bannerState.index - 1); resetBannerAutoPlay(); }
+                if (e.key === 'ArrowRight') { goToBannerSlide(bannerState.index + 1); resetBannerAutoPlay(); }
+            });
+        }
+
+        function goToBannerSlide(target) {
+            const total = bannerState.images.length;
+            if (total === 0) return;
+            let next = target;
+            if (next < 0) next = total - 1;
+            if (next >= total) next = 0;
+
+            const slides = document.querySelectorAll('.banner-slide');
+            const dots = document.querySelectorAll('.banner-dot');
+            slides.forEach((s, i) => s.classList.toggle('active', i === next));
+            dots.forEach((d, i) => d.classList.toggle('active', i === next));
+
+            bannerState.index = next;
+        }
+
+        function startBannerAutoPlay() {
+            stopBannerAutoPlay();
+            if (bannerState.images.length <= 1) return;
+            bannerState.timer = setInterval(() => {
+                goToBannerSlide(bannerState.index + 1);
+            }, bannerState.interval);
+        }
+
+        function stopBannerAutoPlay() {
+            if (bannerState.timer) {
+                clearInterval(bannerState.timer);
+                bannerState.timer = null;
+            }
+        }
+
+        function resetBannerAutoPlay() {
+            stopBannerAutoPlay();
+            startBannerAutoPlay();
         }
 
         async function handleCardFavorite(spotId, btn) {
