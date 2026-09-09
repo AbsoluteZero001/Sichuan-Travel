@@ -79,9 +79,13 @@
             const seen = new Set();
             const result = [];
             for (const spot of spots || []) {
-                const key = spot.id != null ? `id:${spot.id}` : `name:${spot.name}`;
-                if (seen.has(key)) continue;
-                seen.add(key);
+                if (!spot) continue;
+                // 以景点名称为主键去重（同名不同 id 的重复行也合并）
+                const nameKey = String(spot.name || '').trim().toLowerCase();
+                const idKey = spot.id != null ? `id:${String(spot.id).trim()}` : '';
+                if (nameKey && seen.has(nameKey)) continue;
+                if (!nameKey && idKey && seen.has(idKey)) continue;
+                if (nameKey) seen.add(nameKey); else seen.add(idKey);
                 result.push(spot);
             }
             return result;
