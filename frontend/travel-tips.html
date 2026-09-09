@@ -604,6 +604,10 @@
 
         let isChatOpen = false;
         let isTyping = false;
+        // 多轮对话历史：[{role:'user'|'assistant', content:'...'}]
+        let chatHistory = [];
+        // 历史最多保留多少轮，超过则从最早开始裁剪，避免 token 无限增长
+        const MAX_HISTORY_TURNS = 6;
 
         function toggleChat() {
             const chatContainer = document.getElementById('chatContainer');
@@ -617,6 +621,7 @@
 
         function handleChatKeyPress(event) {
             if (event.key === 'Enter') {
+                event.preventDefault();
                 sendMessage();
             }
         }
@@ -630,21 +635,27 @@
             const chatMessages = document.getElementById('chatMessages');
             const messageDiv = document.createElement('div');
             messageDiv.className = `chat-message ${isUser ? 'user' : 'bot'}`;
-            
+
             if (!isUser) {
                 const avatar = document.createElement('div');
                 avatar.className = 'chat-avatar';
                 avatar.textContent = '🤖';
                 messageDiv.appendChild(avatar);
             }
-            
+
             const content = document.createElement('div');
             content.className = 'chat-content';
-            content.innerHTML = text.replace(/\n/g, '<br>');
-            
+            // 转义 HTML，避免 XSS，再换行
+            const escaped = String(text)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/\n/g, '<br>');
+            content.innerHTML = escaped;
+
             messageDiv.appendChild(content);
             chatMessages.appendChild(messageDiv);
-            
+
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
@@ -653,19 +664,19 @@
             const typingDiv = document.createElement('div');
             typingDiv.className = 'chat-message bot';
             typingDiv.id = 'typingIndicator';
-            
+
             const avatar = document.createElement('div');
             avatar.className = 'chat-avatar';
             avatar.textContent = '🤖';
-            
+
             const content = document.createElement('div');
             content.className = 'chat-content';
             content.innerHTML = '<div class="chat-typing"><span></span><span></span><span></span></div>';
-            
+
             typingDiv.appendChild(avatar);
             typingDiv.appendChild(content);
             chatMessages.appendChild(typingDiv);
-            
+
             chatMessages.scrollTop = chatMessages.scrollHeight;
             isTyping = true;
         }
@@ -678,42 +689,65 @@
             isTyping = false;
         }
 
+        function setSendLoading(loading) {
+            const sendBtn = document.getElementById('chatSendBtn');
+            const input = document.getElementById('chatInput');
+            if (!sendBtn) return;
+            sendBtn.disabled = !!loading;
+            sendBtn.textContent = loading ? '回答中...' : '发送';
+            if (input) input.disabled = !!loading;
+        }
+
         async function sendMessage() {
             const input = document.getElementById('chatInput');
-            const sendBtn = document.getElementById('chatSendBtn');
             const question = input.value.trim();
-            
+
+            // 空问题禁止发送 + 防止重复提交
             if (!question || isTyping) return;
-            
+
             input.value = '';
-            sendBtn.disabled = true;
-            
+            setSendLoading(true);
+
             addMessage(question, true);
+            chatHistory.push({ role: 'user', content: question });
             showTyping();
-            
+
             try {
                 const response = await fetch('/api/ai/chat', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ question: question })
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        question: question,
+                        history: chatHistory.slice(-MAX_HISTORY_TURNS * 2)
+                    })
                 });
-                
+
                 const data = await response.json();
-                
                 hideTyping();
-                
-                if (data.success) {
-                    addMessage(data.response);
+
+                // 兼容 answer / response 两个字段
+                const answer = (data && (data.answer || data.response)) || '';
+
+                if (data && data.success && answer) {
+                    addMessage(answer);
+                    chatHistory.push({ role: 'assistant', content: answer });
+                    // 超出长度时，从最早开始裁剪
+                    while (chatHistory.length > MAX_HISTORY_TURNS * 2) {
+                        chatHistory.shift();
+                    }
                 } else {
-                    addMessage('抱歉，我暂时无法回答这个问题，请稍后再试。');
+                    const msg = (data && data.message) || '抱歉，我暂时无法回答这个问题，请稍后再试。';
+                    addMessage(msg);
+                    // 失败时回滚刚加入的用户消息，避免污染历史
+                    chatHistory.pop();
                 }
             } catch (error) {
                 hideTyping();
                 addMessage('网络连接异常，请检查网络后重试。');
+                // 失败时回滚用户历史
+                chatHistory.pop();
             } finally {
-                sendBtn.disabled = false;
+                setSendLoading(false);
             }
         }
     </script>

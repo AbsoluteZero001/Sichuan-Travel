@@ -3,3 +3,5 @@ flask-cors
 mysql-connector-python
 PyJWT
 python-docx
+openai
+python-dotenv

@@ -1,95 +1,16 @@
 from flask import Blueprint, request, jsonify
-import json
 import os
-from pathlib import Path
-from urllib.request import Request, urlopen
-from urllib.error import HTTPError, URLError
+
+# 复用统一 AI Service（基于 openai SDK，支持多轮对话）
+import sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from services.ai_service import ask as ai_ask, get_ai_config, SYSTEM_PROMPT
 
 ai_bp = Blueprint('ai', __name__)
 
-def _load_dotenv_file():
-    backend_dir = Path(__file__).resolve().parent.parent
-    project_dir = backend_dir.parent
-    env_files = [
-        backend_dir / '.env',
-        project_dir / '.env'
-    ]
-
-    for env_file in env_files:
-        if not os.path.exists(env_file):
-            continue
-        try:
-            with open(env_file, 'r', encoding='utf-8') as f:
-                for line in f:
-                    line = line.strip()
-                    if not line or line.startswith('#') or '=' not in line:
-                        continue
-                    key, _, value = line.partition('=')
-                    key = key.strip()
-                    value = value.strip().strip('"').strip("'")
-                    if key and key not in os.environ:
-                        os.environ[key] = value
-        except OSError:
-            continue
-
-_load_dotenv_file()
-
+# 兼容旧引用（如外部代码曾 import get_llm_config）
 def get_llm_config():
-    api_key = os.getenv('LLM_API_KEY') or os.getenv('OPENAI_API_KEY', '')
-    if not api_key:
-        return None
-
-    return {
-        'api_key': api_key,
-        'base_url': (os.getenv('LLM_BASE_URL') or os.getenv('OPENAI_BASE_URL') or 'https://api.openai.com/v1').rstrip('/'),
-        'model': os.getenv('LLM_MODEL') or os.getenv('OPENAI_MODEL') or 'gpt-4o-mini',
-        'timeout': float(os.getenv('LLM_TIMEOUT', '20'))
-    }
-
-def call_llm(question):
-    config = get_llm_config()
-    if not config:
-        return None, 'not_configured'
-
-    payload = json.dumps({
-        'model': config['model'],
-        'messages': [
-            {
-                'role': 'system',
-                'content': (
-                    '你是"四川旅游助手"，运行在四川旅游景点推荐系统中。'
-                    '请使用简体中文，准确、简洁地回答四川旅游相关问题，'
-                    '包括景点、季节、交通、路线、美食、门票和注意事项。'
-                    '如果用户的问题与旅游无关，请礼貌说明你主要擅长四川旅游咨询。'
-                )
-            },
-            {
-                'role': 'user',
-                'content': question
-            }
-        ],
-        'temperature': 0.7,
-        'max_tokens': 800
-    }).encode('utf-8')
-
-    req = Request(
-        f"{config['base_url']}/chat/completions",
-        data=payload,
-        headers={
-            'Content-Type': 'application/json',
-            'Authorization': f"Bearer {config['api_key']}"
-        },
-        method='POST'
-    )
-
-    try:
-        with urlopen(req, timeout=float(config['timeout'])) as response:
-            body = json.loads(response.read().decode('utf-8'))
-        answer = body['choices'][0]['message']['content'].strip()
-        return answer, config['model']
-    except (HTTPError, URLError, KeyError, IndexError, ValueError, TimeoutError) as e:
-        print(f"大模型 API 调用失败: {e}")
-        return None, 'error'
+    return get_ai_config()
 
 tourism_knowledge = {
     'best_time': {
@@ -198,31 +119,70 @@ def generate_response(question):
 @ai_bp.route('/chat', methods=['POST'])
 def chat():
     try:
-        data = request.get_json()
+        data = request.get_json(silent=True) or {}
         question = str(data.get('question', '')).strip()
+        history = data.get('history', [])
 
-        llm_answer, source = call_llm(question)
-        if llm_answer:
+        if not question:
+            return jsonify({
+                'success': False,
+                'message': '问题不能为空'
+            }), 400
+
+        # 调用统一 AI Service（基于 openai SDK，支持多轮）
+        answer, code = ai_ask(question, history=history)
+
+        if answer:
             return jsonify({
                 'success': True,
-                'response': llm_answer,
+                'answer': answer,
+                # 兼容旧前端字段
+                'response': answer,
                 'source': 'llm',
-                'model': source
+                'model': code
             })
 
-        response = generate_response(question)
+        # 调用失败：按错误码映射到友好提示，不泄漏内部堆栈 / API Key
+        friendly, status_code = _map_error_code(code)
+        # 未配置 / SDK 缺失等情况，仍尝试用本地 FAQ 兜底，保证有回答
+        if code in ('not_configured', 'sdk_missing', 'client_error'):
+            fallback = generate_response(question)
+            return jsonify({
+                'success': True,
+                'answer': fallback,
+                'response': fallback,
+                'source': 'local',
+                'model': None,
+                'notice': friendly
+            })
 
-        return jsonify({
-            'success': True,
-            'response': response,
-            'source': 'local',
-            'model': None
-        })
-    except Exception as e:
+        # 其余错误（api_error / timeout / empty_answer）直接返回友好提示
         return jsonify({
             'success': False,
-            'message': str(e)
+            'message': friendly,
+            'error_code': code
+        }), status_code
+
+    except Exception:
+        # 兜底：避免任何未捕获异常把堆栈返回给前端
+        return jsonify({
+            'success': False,
+            'message': '服务器内部错误，请稍后重试'
         }), 500
+
+
+def _map_error_code(code):
+    """把 ai_service 的错误码映射成对用户友好的提示 + HTTP 状态码。"""
+    mapping = {
+        'empty_question': ('问题不能为空', 400),
+        'not_configured': ('AI 服务未配置，已使用本地知识库回答', 200),
+        'sdk_missing': ('未安装 openai SDK，已使用本地知识库回答', 200),
+        'client_error': ('AI 客户端初始化失败，已使用本地知识库回答', 200),
+        'timeout': ('AI 回答超时，请稍后重试', 504),
+        'api_error': ('AI 服务暂时不可用，请稍后重试', 502),
+        'empty_answer': ('AI 未返回有效回答，请稍后重试', 502),
+    }
+    return mapping.get(code, ('AI 服务异常，请稍后重试', 502))
 
 @ai_bp.route('/status', methods=['GET'])
 def get_status():
