@@ -77,19 +77,13 @@
 
         async function renderSpots(spots) {
             const grid = document.getElementById('spotsGrid');
-            const user = getCurrentUser();
             
             if (spots.length === 0) {
                 grid.innerHTML = '<p style="text-align: center; color: #666; padding: 40px;">暂无景点数据</p>';
                 return;
             }
 
-            if (user) {
-                for (const spot of spots) {
-                    const favoriteData = await fetchSpotFavorite(spot.id);
-                    favoriteStatus[spot.id] = favoriteData ? favoriteData.is_favorited || false : false;
-                }
-            }
+            favoriteStatus = await loadFavoriteMap(spots.map(spot => spot.id));
 
             grid.innerHTML = spots.map(spot => {
                 const isFavorited = favoriteStatus[spot.id] || false;

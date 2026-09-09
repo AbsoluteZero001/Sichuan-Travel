@@ -20,6 +20,7 @@ app.register_blueprint(favorites_bp, url_prefix='/api/favorites')
 app.register_blueprint(ai_bp, url_prefix='/api/ai')
 
 @app.route('/api/spots/', methods=['GET'])
+@app.route('/api/spots', methods=['GET'])
 def get_spots():
     keyword = request.args.get('keyword', '')
     season = request.args.get('season', '')

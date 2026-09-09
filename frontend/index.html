@@ -87,7 +87,7 @@
     <script src="common.js"></script>
     <script>
         let currentKeyword = '';
-        const favoriteStatus = {};
+        let favoriteStatus = {};
 
         document.addEventListener('DOMContentLoaded', async () => {
             updateAuthLinks();
@@ -112,23 +112,15 @@
 
         async function renderSpots(spots) {
             const grid = document.getElementById('spotsGrid');
-            const user = getCurrentUser();
             
             if (spots.length === 0) {
                 grid.innerHTML = '<p style="text-align: center; color: #666;">暂无景点数据</p>';
                 return;
             }
 
-            if (user) {
-                for (const spot of spots) {
-                    const favoriteData = await fetchSpotFavorite(spot.id);
-                    favoriteStatus[spot.id] = favoriteData ? favoriteData.is_favorited || false : false;
-                }
-            }
+            favoriteStatus = await loadFavoriteMap(spots.map(spot => spot.id));
 
-            const displaySpots = spots.slice(0, 18);
-            
-            grid.innerHTML = displaySpots.map(spot => {
+            grid.innerHTML = spots.map(spot => {
                 const isFavorited = favoriteStatus[spot.id] || false;
                 return `
                 <div class="spot-card">

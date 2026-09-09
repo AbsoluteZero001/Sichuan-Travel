@@ -59,7 +59,7 @@ function getAuthHeaders() {
 
 async function fetchSpots(keyword = '', season = '') {
     try {
-        const url = new URL(`${API_BASE}/spots`);
+        const url = new URL(`${API_BASE}/spots/`);
         if (keyword) url.searchParams.append('keyword', keyword);
         if (season) url.searchParams.append('season', season);
         
@@ -293,4 +293,24 @@ async function fetchMyFavorites() {
         console.error('获取我的收藏失败:', error);
         return { favorites: [] };
     }
+}
+
+async function loadFavoriteMap(spotIds) {
+    const map = {};
+    if (!getCurrentUser()) {
+        return map;
+    }
+
+    const result = await fetchMyFavorites();
+    if (!result || !Array.isArray(result.favorites)) {
+        return map;
+    }
+
+    const wanted = new Set((spotIds || []).map(Number));
+    for (const favorite of result.favorites) {
+        if (wanted.size === 0 || wanted.has(Number(favorite.spot_id))) {
+            map[favorite.spot_id] = true;
+        }
+    }
+    return map;
 }
