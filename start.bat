@@ -1,59 +1,65 @@
 @echo off
-chcp 65001 >nul
-REM 四川旅游 - 一键启动脚本
-REM 双击本文件即可启动 Flask 后端
-REM 适配新电脑：自动检测 Python、缺失依赖时自动安装
+REM ============================================================
+REM  Sichuan Travel - one-click launcher
+REM  Python priority: project .venv  >  python on PATH  >  py -3
+REM  (ASCII-only messages to avoid console codepage issues)
+REM ============================================================
 
 cd /d "%~dp0backend"
 
-REM ---- 1. 检测 Python（依次尝试 python / py 启动器；不用 python3，Win 上是商店占位符）----
-set "PY_CMD="
-python --version >nul 2>&1 && set "PY_CMD=python"
-if not defined PY_CMD (
-    py -3 --version >nul 2>&1 && set "PY_CMD=py -3"
+REM ---- 1. Locate Python interpreter ----
+set "PY_EXE="
+set "PY_ARGS="
+if exist "%~dp0.venv\Scripts\python.exe" set "PY_EXE=%~dp0.venv\Scripts\python.exe"
+if not defined PY_EXE (
+    python --version >nul 2>&1 && set "PY_EXE=python"
 )
-if not defined PY_CMD (
-    echo [错误] 未检测到 Python，请先安装 Python 3.x
-    echo 安装时请勾选 "Add Python to PATH"，下载地址: https://www.python.org/downloads/
+if not defined PY_EXE (
+    py -3 --version >nul 2>&1 && set "PY_EXE=py" && set "PY_ARGS=-3"
+)
+if not defined PY_EXE (
+    echo [ERROR] Python not found. Please install Python 3.x first.
+    echo         Remember to check "Add Python to PATH" during install.
+    echo         Download: https://www.python.org/downloads/
     echo.
     pause
     exit /b 1
 )
-echo [信息] 检测到 Python:
-%PY_CMD% --version
+echo [INFO] Using Python:
+"%PY_EXE%" %PY_ARGS% --version
 
-REM ---- 2. 检查 .env 是否存在 ----
+REM ---- 2. Check backend\.env ----
 if not exist ".env" (
-    echo [警告] 未找到 backend\.env 文件
-    echo 请先复制 .env.example 为 .env 并填入 AI_API_KEY
+    echo [WARN] backend\.env not found.
+    echo        Copy .env.example to .env and fill in AI_API_KEY.
     echo.
 )
 
-REM ---- 3. 检查依赖，缺失则自动安装 ----
-%PY_CMD% -c "import flask, flask_cors, mysql.connector, jwt, docx, openai, dotenv" >nul 2>&1
+REM ---- 3. Ensure dependencies are installed (auto-install on first run) ----
+"%PY_EXE%" %PY_ARGS% -c "import flask, flask_cors, mysql.connector, jwt, docx, openai, dotenv" >nul 2>&1
 if errorlevel 1 (
-    echo [信息] 首次运行，正在自动安装依赖（requirements.txt），请稍候...
-    %PY_CMD% -m pip install -r "%~dp0requirements.txt"
+    echo [INFO] First run: installing dependencies from requirements.txt ...
+    "%PY_EXE%" %PY_ARGS% -m pip install -r "%~dp0requirements.txt"
     if errorlevel 1 (
-        echo [错误] 依赖安装失败，请检查网络后手动执行:
-        echo        %PY_CMD% -m pip install -r "%~dp0requirements.txt"
+        echo [ERROR] Dependency installation failed. Check network and run manually:
+        echo         "%PY_EXE%" %PY_ARGS% -m pip install -r "%~dp0requirements.txt"
         echo.
         pause
         exit /b 1
     )
-    echo [信息] 依赖安装完成。
+    echo [INFO] Dependencies installed.
 )
 
 echo ========================================
-echo  四川旅游 后端启动中...
-echo  访问地址: http://localhost:3000
-echo  旅游助手: http://localhost:3000/travel-tips.html
-echo  按 Ctrl+C 可停止
+echo  Sichuan Travel backend starting...
+echo  Home:     http://localhost:3000
+echo  AI guide: http://localhost:3000/travel-tips.html
+echo  Press Ctrl+C to stop.
 echo ========================================
 echo.
 
-%PY_CMD% app.py
+"%PY_EXE%" %PY_ARGS% app.py
 
 echo.
-echo 服务已停止，按任意键关闭窗口
+echo Server stopped. Press any key to close this window.
 pause >nul
