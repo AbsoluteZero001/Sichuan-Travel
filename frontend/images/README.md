@@ -17,3 +17,15 @@
 | `xiling-xueshan.jpg` | [西岭雪山 - panoramio.jpg](https://commons.wikimedia.org/wiki/File:%E8%A5%BF%E5%B2%AD%E9%9B%AA%E5%B1%B1_-_panoramio.jpg) |
 | `langzhong-gucheng.jpg` | [Langzhong Ancient Town.jpg](https://commons.wikimedia.org/wiki/File:Langzhong_Ancient_Town.jpg) |
 | `lugu-lake.jpg` | [Lugu Lake from Lige Observation Deck (20230930180236).jpg](https://commons.wikimedia.org/wiki/File:Lugu_Lake_from_Lige_Observation_Deck_(20230930180236).jpg) |
+| `ruoergai.jpg` | [若尔盖草原风情1.JPG](https://commons.wikimedia.org/wiki/File:%E8%8B%A5%E5%B0%94%E7%9B%96%E8%8D%89%E5%8E%9F%E9%A3%8E%E6%83%851.JPG) |
+| `xinduqiao.jpg` | [新都桥美景 - Scenary of Xinduqiao Town - 2012.10 - panoramio.jpg](https://commons.wikimedia.org/wiki/File:%E6%96%B0%E9%83%BD%E6%A1%A5%E7%BE%8E%E6%99%AF_-_Scenary_of_Xinduqiao_Town_-_2012.10_-_panoramio.jpg) |
+| `bipenggou.jpg` | [毕棚沟.jpg](https://commons.wikimedia.org/wiki/File:%E6%AF%95%E6%A3%9A%E6%B2%9F.jpg) |
+| `dagu.jpg` | [达古冰川.jpg](https://commons.wikimedia.org/wiki/File:%E8%BE%BE%E5%8F%A4%E5%86%B0%E5%B7%9D.jpg) |
+| `guangwu.jpg` | [光雾山 (142253111).jpeg](https://commons.wikimedia.org/wiki/File:%E5%85%89%E9%9B%BE%E5%B1%B1_(142253111).jpeg) |
+| `jianmen.jpg` | [重修的剑门关 - panoramio.jpg](https://commons.wikimedia.org/wiki/File:%E9%87%8D%E4%BF%AE%E7%9A%84%E5%89%91%E9%97%A8%E5%85%B3_-_panoramio.jpg) |
+| `sanxingdui.jpg` | [Ancient Bronze Mask from Sanxingdui 12.jpg](https://commons.wikimedia.org/wiki/File:Ancient_Bronze_Mask_from_Sanxingdui_12.jpg) |
+| `wuhouci.jpg` | [成都 武侯祠 (40154129382).jpg](https://commons.wikimedia.org/wiki/File:%E6%88%90%E9%83%BD_%E6%AD%A6%E4%BE%AF%E7%A5%A0_(40154129382).jpg) |
+| `kuanzhai.jpg` | [宽窄巷子 - panoramio.jpg](https://commons.wikimedia.org/wiki/File:%E5%AE%BD%E7%AA%84%E5%B7%B7%E5%AD%90_-_panoramio.jpg) |
+| `gongga.jpg` | [金色贡嘎 - Golden Mountains - 2012.10 - panoramio.jpg](https://commons.wikimedia.org/wiki/File:%E9%87%91%E8%89%B2%E8%B4%A1%E5%98%8E_-_Golden_Mountains_-_2012.10_-_panoramio.jpg) |
+| `jiayang.jpg` | [Shibanxi-10-01.jpg](https://commons.wikimedia.org/wiki/File:Shibanxi-10-01.jpg) |
+| `seda.jpg` | [Larung Gar Five Sciences Buddhist Academy 2014 (14660043083).jpg](https://commons.wikimedia.org/wiki/File:Larung_Gar_Five_Sciences_Buddhist_Academy_2014_(14660043083).jpg) |
