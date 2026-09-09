@@ -2,3 +2,4 @@ Flask
 flask-cors
 mysql-connector-python
 PyJWT
+python-docx

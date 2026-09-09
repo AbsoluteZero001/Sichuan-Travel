@@ -1,5 +1,5 @@
 from docx import Document
-from docx.shared import Pt, Cm, RGBColor
+from docx.shared import Pt, RGBColor
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 
 doc = Document()
@@ -36,7 +36,7 @@ doc.add_paragraph('')
 heading1 = doc.add_heading('三、数据库设计', level=1)
 heading1.style.font.color.rgb = RGBColor(0, 0, 128)
 
-heading2 = doc.add_heading('3.1 数据库连接配置', level=2)
+doc.add_heading('3.1 数据库连接配置', level=2)
 doc.add_paragraph('文件路径：backend/sjk.py')
 code = '''import mysql.connector
 from mysql.connector import Error
@@ -67,7 +67,7 @@ doc.add_paragraph('2. config字典配置数据库连接参数：主机、用户�
 doc.add_paragraph('3. get_connection()函数尝试建立数据库连接，失败时返回None')
 doc.add_paragraph('')
 
-heading2 = doc.add_heading('3.2 数据表结构', level=2)
+doc.add_heading('3.2 数据表结构', level=2)
 doc.add_paragraph('文件路径：backend/sjk.py')
 code = '''def init_db():
     conn = get_connection()
@@ -134,7 +134,7 @@ doc.add_paragraph('')
 heading1 = doc.add_heading('四、后端代码', level=1)
 heading1.style.font.color.rgb = RGBColor(0, 0, 128)
 
-heading2 = doc.add_heading('4.1 主应用入口', level=2)
+doc.add_heading('4.1 主应用入口', level=2)
 doc.add_paragraph('文件路径：backend/app.py')
 code = '''from flask import Flask, send_from_directory, request, jsonify
 from flask_cors import CORS
@@ -170,7 +170,7 @@ doc.add_paragraph('3. 启动时调用init_db()初始化数据库')
 doc.add_paragraph('4. 监听0.0.0.0:3000端口启动服务')
 doc.add_paragraph('')
 
-heading2 = doc.add_heading('4.2 景点模糊搜索接口', level=2)
+doc.add_heading('4.2 景点模糊搜索接口', level=2)
 doc.add_paragraph('文件路径：backend/app.py')
 code = '''@app.route('/api/spots/', methods=['GET'])
 def get_spots():
@@ -226,7 +226,7 @@ doc.add_paragraph('3. keyword参数同时匹配name、city、season三个字段�
 doc.add_paragraph('4. 结果按收藏数量降序排列')
 doc.add_paragraph('')
 
-heading2 = doc.add_heading('4.3 用户认证模块', level=2)
+doc.add_heading('4.3 用户认证模块', level=2)
 doc.add_paragraph('文件路径：backend/routes/users.py')
 code = '''import jwt
 from datetime import datetime, timedelta
@@ -293,7 +293,7 @@ doc.add_paragraph('2. 查询数据库验证用户身份')
 doc.add_paragraph('3. 验证成功后生成JWT token返回给前端')
 doc.add_paragraph('')
 
-heading2 = doc.add_heading('4.4 收藏功能模块', level=2)
+doc.add_heading('4.4 收藏功能模块', level=2)
 doc.add_paragraph('文件路径：backend/routes/favorites.py')
 code = '''@favorites_bp.route('/', methods=['POST'])
 def add_favorite():
@@ -331,7 +331,7 @@ doc.add_paragraph('3. 将收藏记录插入spot_favorites表')
 doc.add_paragraph('4. 由于数据库有UNIQUE约束，重复收藏会抛出异常')
 doc.add_paragraph('')
 
-heading2 = doc.add_heading('4.5 AI问答模块', level=2)
+doc.add_heading('4.5 AI问答模块', level=2)
 doc.add_paragraph('文件路径：backend/routes/ai.py')
 code = '''@ai_bp.route('/chat', methods=['POST'])
 def chat():
@@ -372,7 +372,7 @@ doc.add_paragraph('')
 heading1 = doc.add_heading('五、前端代码', level=1)
 heading1.style.font.color.rgb = RGBColor(0, 0, 128)
 
-heading2 = doc.add_heading('5.1 景点列表加载', level=2)
+doc.add_heading('5.1 景点列表加载', level=2)
 doc.add_paragraph('文件路径：frontend/index.html')
 code = '''let currentKeyword = '';
 
@@ -391,7 +391,7 @@ async function renderSpots(spots) {
     container.innerHTML = '';
     
     for (const spot of spots) {
-        const isFavorited = await checkFavorite(spot.id);
+        const isFavorite = await checkFavorite(spot.id);
         
         const card = document.createElement('div');
         card.className = 'spot-card';
@@ -401,8 +401,8 @@ async function renderSpots(spots) {
                 <h3>${spot.name}</h3>
                 <p>${spot.city} · ${spot.season}</p>
                 <button onclick="handleCardFavorite(${spot.id}, this)" 
-                        class="btn ${isFavorited ? 'filled' : ''}">
-                    ${isFavorited ? '♥ 已收藏' : '♡ 收藏'}
+                        class="btn ${isFavorite ? 'filled' : ''}">
+                    ${isFavorite ? '♥ 已收藏' : '♡ 收藏'}
                 </button>
             </div>
         `;
@@ -420,7 +420,7 @@ doc.add_paragraph('2. renderSpots()动态生成景点卡片HTML')
 doc.add_paragraph('3. 根据收藏状态显示不同的爱心样式')
 doc.add_paragraph('')
 
-heading2 = doc.add_heading('5.2 收藏功能实现', level=2)
+doc.add_heading('5.2 收藏功能实现', level=2)
 doc.add_paragraph('文件路径：frontend/index.html')
 code = '''async function handleCardFavorite(spotId, btn) {
     const token = localStorage.getItem('token');
@@ -516,7 +516,7 @@ doc.add_paragraph('')
 heading1 = doc.add_heading('八、项目结构', level=1)
 heading1.style.font.color.rgb = RGBColor(0, 0, 128)
 
-        code = '''Sichuan Travel/
+code = '''Sichuan Travel/
 ├── backend/
 │   ├── app.py              # 主应用入口
 │   ├── sjk.py              # 数据库配置与初始化
