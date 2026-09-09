@@ -116,6 +116,10 @@ def admin_panel():
 def user_profile():
     return send_from_directory(FRONTEND_DIR, 'user-profile.html')
 
+@app.route('/image-upload.html')
+def image_upload():
+    return send_from_directory(FRONTEND_DIR, 'image-upload.html')
+
 @app.route('/common.js')
 def common_js():
     return send_from_directory(os.path.join(FRONTEND_DIR, 'js'), 'common.js')

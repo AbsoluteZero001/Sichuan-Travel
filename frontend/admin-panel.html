@@ -299,10 +299,10 @@
             const response = await deleteFavorite(id);
 
             if (response && response.success) {
-                alert('删除成功！');
+                showToast('删除成功！', 'success');
                 loadFavorites();
             } else {
-                alert(response?.message || '删除失败，请重试');
+                showToast(response?.message || '删除失败，请重试', 'error');
             }
         }
 
@@ -350,7 +350,7 @@
         async function showEditModal(id) {
             const spot = await fetchSpotById(id);
             if (!spot) {
-                alert('获取景点信息失败');
+                showToast('获取景点信息失败', 'error');
                 return;
             }
 
@@ -386,11 +386,11 @@
             const response = await addSpot(spotData);
 
             if (response && response.success) {
-                alert('添加成功！');
+                showToast('添加成功！', 'success');
                 hideModal('addModal');
                 loadSpots();
             } else {
-                alert(response?.message || '添加失败，请重试');
+                showToast(response?.message || '添加失败，请重试', 'error');
             }
         }
 
@@ -413,11 +413,11 @@
             const response = await updateSpot(id, spotData);
 
             if (response && response.success) {
-                alert('更新成功！');
+                showToast('更新成功！', 'success');
                 hideModal('editModal');
                 loadSpots();
             } else {
-                alert(response?.message || '更新失败，请重试');
+                showToast(response?.message || '更新失败，请重试', 'error');
             }
         }
 
@@ -429,10 +429,10 @@
             const success = await deleteSpot(id);
 
             if (success) {
-                alert('删除成功！');
+                showToast('删除成功！', 'success');
                 loadSpots();
             } else {
-                alert('删除失败，请重试');
+                showToast('删除失败，请重试', 'error');
             }
         }
 

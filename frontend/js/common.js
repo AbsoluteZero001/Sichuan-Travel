@@ -4,6 +4,48 @@ function navigateTo(page) {
     window.location.href = '/' + page;
 }
 
+// 滑动消息条：替代 alert 弹窗
+function showToast(message, type = 'info', duration = 2500) {
+    let container = document.getElementById('toastContainer');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'toastContainer';
+        container.className = 'toast-container';
+        document.body.appendChild(container);
+    }
+
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.innerHTML = `<span class="toast-icon"></span><span class="toast-msg"></span>`;
+    toast.querySelector('.toast-msg').textContent = message;
+
+    container.appendChild(toast);
+
+    // 触发进入动画
+    requestAnimationFrame(() => {
+        toast.classList.add('show');
+    });
+
+    // 自动滑出
+    const timer = setTimeout(() => {
+        closeToast(toast);
+    }, duration);
+
+    toast.addEventListener('click', () => {
+        clearTimeout(timer);
+        closeToast(toast);
+    });
+}
+
+function closeToast(toast) {
+    if (!toast) return;
+    toast.classList.remove('show');
+    toast.classList.add('leave');
+    setTimeout(() => {
+        if (toast.parentNode) toast.parentNode.removeChild(toast);
+    }, 350);
+}
+
 function getCurrentUser() {
     return JSON.parse(localStorage.getItem('user') || 'null');
 }

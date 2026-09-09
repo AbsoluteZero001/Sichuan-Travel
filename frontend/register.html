@@ -97,10 +97,10 @@
             });
 
             if (response && response.success) {
-                alert('注册成功！请登录');
-                window.location.href = 'login.html';
+                showToast('注册成功！请登录', 'success');
+                setTimeout(() => { window.location.href = 'login.html'; }, 800);
             } else {
-                alert(response?.message || '注册失败，请重试');
+                showToast(response?.message || '注册失败，请重试', 'error');
             }
         }
 

@@ -165,10 +165,10 @@
             const response = await deleteFavorite(id);
 
             if (response && response.success) {
-                alert('取消收藏成功！');
+                showToast('取消收藏成功！', 'success');
                 await loadMyFavorites();
             } else {
-                alert(response?.message || '取消收藏失败，请重试');
+                showToast(response?.message || '取消收藏失败，请重试', 'error');
             }
         }
     </script>

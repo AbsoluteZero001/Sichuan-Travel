@@ -110,20 +110,34 @@
             loadSpots(currentKeyword);
         }
 
+        function dedupeSpots(spots) {
+            const seen = new Set();
+            const result = [];
+            for (const spot of spots || []) {
+                const key = spot.id != null ? `id:${spot.id}` : `name:${spot.name}`;
+                if (seen.has(key)) continue;
+                seen.add(key);
+                result.push(spot);
+            }
+            return result;
+        }
+
         async function renderSpots(spots) {
             const grid = document.getElementById('spotsGrid');
-            
-            if (spots.length === 0) {
+
+            const uniqueSpots = dedupeSpots(spots);
+
+            if (uniqueSpots.length === 0) {
                 grid.innerHTML = '<p style="text-align: center; color: #666;">暂无景点数据</p>';
                 return;
             }
 
-            favoriteStatus = await loadFavoriteMap(spots.map(spot => spot.id));
+            favoriteStatus = await loadFavoriteMap(uniqueSpots.map(spot => spot.id));
 
-            grid.innerHTML = spots.map(spot => {
+            grid.innerHTML = uniqueSpots.map((spot, index) => {
                 const isFavorited = favoriteStatus[spot.id] || false;
                 return `
-                <div class="spot-card">
+                <div class="spot-card" style="animation-delay:${index * 60}ms;">
                     <img src="${spot.image || 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=sichuan%20beautiful%20scenery&image_size=landscape_4_3'}" alt="${spot.name}">
                     <div class="spot-info">
                         <h4>${spot.name}</h4>
@@ -138,7 +152,7 @@
                         </div>
                         <div style="display: flex; gap: 10px;">
                             <a href="/spot-detail.html?id=${spot.id}" class="btn">查看详情</a>
-                            <button class="btn btn-favorite ${isFavorited ? 'filled' : ''}" onclick="handleCardFavorite(${spot.id}, this)">${isFavorited ? '♥ 已收藏' : '♡ 收藏'}</button>
+                            <button class="btn btn-favorite ${isFavorited ? 'filled' : ''}" onclick="handleCardFavorite(${spot.id}, this)"><span class="heart-icon">${isFavorited ? '♥' : '♡'}</span> ${isFavorited ? '已收藏' : '收藏'}</button>
                         </div>
                     </div>
                 </div>
@@ -149,8 +163,8 @@
         async function handleCardFavorite(spotId, btn) {
             const user = getCurrentUser();
             if (!user) {
-                alert('请先登录');
-                window.location.href = 'login.html';
+                showToast('请先登录', 'warning');
+                setTimeout(() => { window.location.href = 'login.html'; }, 600);
                 return;
             }
 
@@ -160,20 +174,22 @@
             if (isFavorited) {
                 const response = await removeFavoriteBySpot(spotId);
                 if (response && response.success) {
-                    btn.innerHTML = '♡ 收藏';
-                    btn.classList.remove('filled');
+                    showToast('已取消收藏', 'info');
+                    btn.classList.add('removed');
+                    setTimeout(() => btn.classList.remove('removed'), 400);
                     loadSpots(currentKeyword);
                 } else {
-                    alert(response?.message || '取消收藏失败');
+                    showToast(response?.message || '取消收藏失败', 'error');
                 }
             } else {
                 const response = await addFavorite(spotId);
                 if (response && response.success) {
-                    btn.innerHTML = '♥ 已收藏';
+                    btn.innerHTML = '<span class="heart-icon">♥</span> 已收藏';
                     btn.classList.add('filled');
+                    showToast('收藏成功', 'success');
                     loadSpots(currentKeyword);
                 } else {
-                    alert(response?.message || '收藏失败');
+                    showToast(response?.message || '收藏失败', 'error');
                 }
             }
         }

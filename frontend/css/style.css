@@ -1246,3 +1246,252 @@ footer {
         transform: scale(1.12);
     }
 }
+
+/* ===================== 滑动消息条（Toast） ===================== */
+.toast-container {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+}
+
+.toast {
+    pointer-events: auto;
+    min-width: 240px;
+    max-width: 360px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 18px;
+    border-radius: 8px;
+    background: rgba(13, 91, 75, 0.95);
+    color: #fff;
+    font-size: 14px;
+    line-height: 1.5;
+    box-shadow: 0 12px 30px rgba(8, 43, 38, 0.22);
+    border-left: 4px solid var(--gold);
+    cursor: pointer;
+    transform: translateX(120%);
+    opacity: 0;
+    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.4s ease;
+    backdrop-filter: blur(10px);
+}
+
+.toast.show {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.toast.leave {
+    transform: translateX(120%);
+    opacity: 0;
+}
+
+.toast .toast-icon {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--gold);
+    position: relative;
+}
+
+.toast .toast-icon::after {
+    content: "";
+    position: absolute;
+    left: 5px;
+    top: 3px;
+    width: 5px;
+    height: 9px;
+    border: solid #2f2a18;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.toast-success {
+    background: rgba(45, 139, 112, 0.96);
+    border-left-color: #6fcf97;
+}
+
+.toast-success .toast-icon {
+    background: #6fcf97;
+}
+
+.toast-error {
+    background: rgba(194, 74, 69, 0.96);
+    border-left-color: #ff9b94;
+}
+
+.toast-error .toast-icon {
+    background: #ff9b94;
+}
+
+.toast-error .toast-icon::after {
+    left: 4px;
+    top: 4px;
+    width: 7px;
+    height: 7px;
+    border: 0;
+    background: #2f2a18;
+    border-radius: 1px;
+    transform: rotate(45deg);
+}
+
+.toast-warning {
+    background: rgba(201, 155, 63, 0.96);
+    border-left-color: #ffd76a;
+    color: #2f2a18;
+}
+
+.toast-warning .toast-icon {
+    background: #ffd76a;
+}
+
+.toast-warning .toast-icon::after {
+    border-color: #2f2a18;
+    border-width: 0 2px 2px 0;
+    left: 5px;
+    top: 1px;
+    height: 6px;
+    transform: rotate(0deg);
+    width: 2px;
+}
+
+.toast-warning .toast-icon::before {
+    content: "";
+    position: absolute;
+    left: 7px;
+    top: 8px;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #2f2a18;
+}
+
+.toast-info .toast-icon {
+    background: var(--gold);
+}
+
+/* ===================== 登录页进度条 ===================== */
+.login-progress {
+    margin-top: 16px;
+    height: 6px;
+    width: 100%;
+    background: rgba(20, 82, 73, 0.12);
+    border-radius: 999px;
+    overflow: hidden;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.login-progress.active {
+    opacity: 1;
+}
+
+.login-progress .bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--jade), var(--gold));
+    border-radius: 999px;
+    transition: width 0.4s ease;
+}
+
+.login-progress.active .bar {
+    animation: progressIndeterminate 1.6s ease-in-out infinite;
+}
+
+@keyframes progressIndeterminate {
+    0% { width: 0%; margin-left: 0%; }
+    25% { width: 35%; margin-left: 0%; }
+    50% { width: 50%; margin-left: 50%; }
+    75% { width: 30%; margin-left: 70%; }
+    100% { width: 0%; margin-left: 100%; }
+}
+
+.form-container .btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* ===================== 收藏 / 查看按钮动画 ===================== */
+.btn-favorite {
+    transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1),
+                background 0.25s ease,
+                box-shadow 0.25s ease;
+}
+
+.btn-favorite:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(194, 74, 69, 0.22);
+}
+
+.btn-favorite:active {
+    transform: translateY(0) scale(0.96);
+}
+
+.btn-favorite.filled {
+    animation: favPop 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes favPop {
+    0% { transform: scale(1); }
+    35% { transform: scale(1.18); }
+    60% { transform: scale(0.92); }
+    100% { transform: scale(1); }
+}
+
+.btn-favorite.removed {
+    animation: favShake 0.4s ease;
+}
+
+@keyframes favShake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-3px); }
+    40% { transform: translateX(3px); }
+    60% { transform: translateX(-2px); }
+    80% { transform: translateX(2px); }
+}
+
+.btn-favorite .heart-icon {
+    display: inline-block;
+    transition: transform 0.25s ease;
+}
+
+.btn-favorite:hover .heart-icon {
+    transform: scale(1.15) rotate(-8deg);
+}
+
+.spot-card .spot-info .btn:not(.btn-favorite) {
+    transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.spot-card .spot-info .btn:not(.btn-favorite)::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+    transition: left 0.5s ease;
+}
+
+.spot-card .spot-info .btn:not(.btn-favorite):hover::after {
+    left: 100%;
+}
+
+.spot-card .spot-info .btn:not(.btn-favorite):hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(24, 97, 79, 0.22);
+}
+
+.spot-card .spot-info .btn:not(.btn-favorite):active {
+    transform: translateY(0) scale(0.97);
+}

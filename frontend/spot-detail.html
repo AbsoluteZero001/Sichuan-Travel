@@ -31,15 +31,21 @@
             border: none;
             border-radius: 25px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1),
+                        background 0.25s ease,
+                        box-shadow 0.25s ease;
         }
         .favorite-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
+        .favorite-btn:active {
+            transform: translateY(0) scale(0.96);
+        }
         .favorite-btn.filled {
             background-color: #e74c3c;
             color: white;
+            animation: favPop 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
         .favorite-btn.filled:hover {
             background-color: #c0392b;
@@ -51,10 +57,33 @@
         .favorite-btn:not(.filled):hover {
             background-color: #3a7ab0;
         }
+        .favorite-btn.removed {
+            animation: favShake 0.4s ease;
+        }
         .favorite-btn:disabled {
             background-color: #ccc;
             cursor: not-allowed;
             transform: none;
+        }
+        .favorite-btn .heart-icon {
+            display: inline-block;
+            transition: transform 0.25s ease;
+        }
+        .favorite-btn:hover .heart-icon {
+            transform: scale(1.18) rotate(-8deg);
+        }
+        @keyframes favPop {
+            0% { transform: scale(1); }
+            35% { transform: scale(1.18); }
+            60% { transform: scale(0.92); }
+            100% { transform: scale(1); }
+        }
+        @keyframes favShake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-3px); }
+            40% { transform: translateX(3px); }
+            60% { transform: translateX(-2px); }
+            80% { transform: translateX(2px); }
         }
         .login-prompt {
             text-align: center;
@@ -188,8 +217,8 @@
                 section.innerHTML = `
                     <h3>收藏</h3>
                     <div class="favorite-count">共 ${favoriteCount} 人收藏</div>
-                    <button class="favorite-btn ${isFavorited ? 'filled' : ''}" onclick="handleFavorite()">
-                        <span>${isFavorited ? '♥' : '♡'}</span>
+                    <button class="favorite-btn ${isFavorited ? 'filled' : ''}" id="favoriteBtn" onclick="handleFavorite()">
+                        <span class="heart-icon">${isFavorited ? '♥' : '♡'}</span>
                         <span>${isFavorited ? '已收藏' : '收藏景点'}</span>
                     </button>
                 `;
@@ -207,28 +236,34 @@
         async function handleFavorite() {
             const user = getCurrentUser();
             if (!user) {
-                alert('请先登录');
+                showToast('请先登录', 'warning');
+                setTimeout(() => { window.location.href = '/login.html'; }, 700);
                 return;
             }
 
             const favoriteData = await fetchSpotFavorite(currentSpotId);
             const isFavorited = favoriteData ? favoriteData.is_favorited || false : false;
 
+            const btn = document.getElementById('favoriteBtn');
             if (isFavorited) {
                 const response = await deleteFavoriteBySpot(currentSpotId);
                 if (response && response.success) {
-                    alert('取消收藏成功！');
+                    showToast('已取消收藏', 'info');
+                    if (btn) {
+                        btn.classList.add('removed');
+                        setTimeout(() => btn.classList.remove('removed'), 400);
+                    }
                     await renderFavoriteSection();
                 } else {
-                    alert(response?.message || '取消收藏失败，请重试');
+                    showToast(response?.message || '取消收藏失败，请重试', 'error');
                 }
             } else {
                 const response = await addFavorite(currentSpotId);
                 if (response && response.success) {
-                    alert('收藏成功！');
+                    showToast('收藏成功', 'success');
                     await renderFavoriteSection();
                 } else {
-                    alert(response?.message || '收藏失败，请重试');
+                    showToast(response?.message || '收藏失败，请重试', 'error');
                 }
             }
         }

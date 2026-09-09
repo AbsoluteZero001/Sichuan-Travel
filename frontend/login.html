@@ -42,7 +42,8 @@
                     <input type="password" id="password" placeholder="请输入密码" required>
                     <div class="error" id="passwordError"></div>
                 </div>
-                <button type="submit" class="btn" style="width: 100%;">登录</button>
+                <button type="submit" class="btn" id="loginBtn" style="width: 100%;">登录</button>
+                <div class="login-progress" id="loginProgress"><div class="bar"></div></div>
             </form>
             <p>还没有账号？<a href="/register.html">立即注册</a></p>
         </div>
@@ -60,7 +61,7 @@
 
         async function handleLogin(event) {
             event.preventDefault();
-            
+
             clearErrors();
 
             const username = document.getElementById('username').value;
@@ -80,22 +81,36 @@
 
             if (!isValid) return;
 
-            const response = await loginUser({
-                username,
-                password
-            });
+            const loginBtn = document.getElementById('loginBtn');
+            const progress = document.getElementById('loginProgress');
+            loginBtn.disabled = true;
+            progress.classList.add('active');
 
-            if (response && response.success) {
-                setCurrentUser(response.user, response.token);
-                alert('登录成功！');
-                
-                if (response.user.role === 'admin') {
-                    window.location.href = '/admin-panel.html';
+            try {
+                const response = await loginUser({
+                    username,
+                    password
+                });
+
+                if (response && response.success) {
+                    setCurrentUser(response.user, response.token);
+                    showToast('登录成功！正在跳转...', 'success');
+                    setTimeout(() => {
+                        if (response.user.role === 'admin') {
+                            window.location.href = '/admin-panel.html';
+                        } else {
+                            window.location.href = '/';
+                        }
+                    }, 700);
                 } else {
-                    window.location.href = '/';
+                    progress.classList.remove('active');
+                    loginBtn.disabled = false;
+                    showToast(response?.message || '登录失败，请检查用户名和密码', 'error');
                 }
-            } else {
-                alert(response?.message || '登录失败，请检查用户名和密码');
+            } catch (err) {
+                progress.classList.remove('active');
+                loginBtn.disabled = false;
+                showToast('登录失败，请稍后重试', 'error');
             }
         }
 
