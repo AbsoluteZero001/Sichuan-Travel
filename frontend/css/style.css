@@ -732,10 +732,11 @@ header {
     z-index: 100;
     padding: 12px 0;
     color: #fff;
-    background: rgba(10, 54, 49, 0.92);
-    box-shadow: 0 8px 28px rgba(9, 45, 41, 0.18);
+    /* 导航栏使用站内字体同款主题蓝 #4a90c2 */
+    background: rgba(74, 144, 194, 0.96);
+    box-shadow: 0 8px 28px rgba(36, 92, 133, 0.25);
     backdrop-filter: blur(14px);
-    border-bottom: 1px solid rgba(233, 198, 117, 0.34);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.22);
 }
 
 header .container {
@@ -760,7 +761,7 @@ header .container {
 .logo p {
     margin: 0;
     font-size: 12px;
-    color: #cfe5dc;
+    color: #dcecf7;
 }
 
 nav ul {
@@ -776,31 +777,71 @@ nav ul li {
     margin: 0;
 }
 
+/* 导航链接：胶囊按钮风格 + 进场落下动画 */
 nav ul li a,
-.auth-links a,
-.auth-links span {
+.auth-links a {
     position: relative;
+    display: inline-block;
+    padding: 8px 20px;
+    border-radius: 999px;
     color: #f7fbf9;
     text-decoration: none;
     font-size: 14px;
     font-weight: 500;
+    letter-spacing: 1px;
+    background: transparent;
+    transition: background-color 0.25s ease, color 0.25s ease,
+                transform 0.25s ease, box-shadow 0.25s ease;
+    animation: navDrop 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
 }
 
-nav ul li a::after,
-.auth-links a::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 100%;
-    bottom: -7px;
-    height: 2px;
-    background: var(--gold);
-    transition: right 0.3s ease;
+/* 页面跳转按钮依次落下 */
+nav ul li:nth-child(1) a { animation-delay: 0.05s; }
+nav ul li:nth-child(2) a { animation-delay: 0.13s; }
+nav ul li:nth-child(3) a { animation-delay: 0.21s; }
+nav ul li:nth-child(4) a { animation-delay: 0.29s; }
+
+/* 登录 / 注册做成半透明胶囊按钮 */
+.auth-links a {
+    background: rgba(255, 255, 255, 0.16);
+    animation-delay: 0.37s;
 }
 
-nav ul li a:hover::after,
-.auth-links a:hover::after {
-    right: 0;
+.auth-links a + a {
+    background: rgba(255, 255, 255, 0.92);
+    color: #357abd;
+    font-weight: 600;
+    animation-delay: 0.45s;
+}
+
+.auth-links span {
+    color: #eaf4fb;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* hover：白底蓝字 + 轻微上浮 + 投影 */
+nav ul li a:hover,
+.auth-links a:hover {
+    background: #ffffff;
+    color: #2f7cb5;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(20, 70, 110, 0.3);
+}
+
+.auth-links a + a:hover {
+    background: #ffffff;
+    color: #2f7cb5;
+}
+
+nav ul li a:active,
+.auth-links a:active {
+    transform: translateY(0) scale(0.95);
+}
+
+@keyframes navDrop {
+    from { opacity: 0; transform: translateY(-14px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
 
 .auth-links {
@@ -871,22 +912,29 @@ nav ul li a:hover::after,
     align-items: center;
     justify-content: center;
     gap: 8px;
-    padding: 12px 28px;
+    padding: 12px 30px;
     border: 0;
-    border-radius: 6px;
+    border-radius: 999px;
     color: #fff;
-    background: var(--jade);
+    background: linear-gradient(135deg, #5ba3d0 0%, #3a7cb8 100%);
     font-size: 15px;
     font-weight: 600;
+    letter-spacing: 1px;
     text-decoration: none;
     cursor: pointer;
-    transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+    box-shadow: 0 6px 16px rgba(58, 124, 184, 0.3);
+    transition: transform 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease;
 }
 
 .btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 12px 24px rgba(24, 97, 79, 0.25);
-    background: var(--pine);
+    box-shadow: 0 12px 26px rgba(47, 105, 160, 0.4);
+    filter: brightness(1.07);
+}
+
+.btn:active {
+    transform: translateY(0) scale(0.96);
+    box-shadow: 0 4px 10px rgba(47, 105, 160, 0.3);
 }
 
 .btn-secondary {
@@ -931,7 +979,7 @@ section.section[style*="#f8f9fa"] {
     position: relative;
     display: inline-block;
     margin: 0 0 14px;
-    color: var(--pine);
+    color: #4a90c2;
     font-size: 30px;
     letter-spacing: 2px;
 }
@@ -940,7 +988,7 @@ section.section[style*="#f8f9fa"] {
     width: 88px;
     height: 3px;
     margin: 0 auto;
-    background: linear-gradient(90deg, var(--gold), var(--jade));
+    background: linear-gradient(90deg, #8fc1e3, #357abd, #8fc1e3);
     border-radius: 99px;
 }
 
@@ -962,23 +1010,31 @@ section.section[style*="#f8f9fa"] {
 }
 
 .search-bar button {
-    padding: 14px 30px;
+    padding: 14px 32px;
     border: 0;
     border-radius: 0 999px 999px 0;
-    background: var(--gold);
-    color: #2f2a18;
+    background: linear-gradient(135deg, #5ba3d0, #3a7cb8);
+    color: #fff;
     font-weight: 700;
+    letter-spacing: 2px;
     cursor: pointer;
-    transition: filter 0.25s ease;
+    box-shadow: 0 6px 16px rgba(58, 124, 184, 0.28);
+    transition: filter 0.25s ease, transform 0.2s ease, box-shadow 0.25s ease;
 }
 
 .search-bar button:hover {
-    filter: brightness(1.06);
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+    box-shadow: 0 10px 22px rgba(47, 105, 160, 0.38);
+}
+
+.search-bar button:active {
+    transform: translateY(0) scale(0.97);
 }
 
 .search-bar input:focus {
-    border-color: var(--jade);
-    box-shadow: 0 0 0 4px rgba(45, 139, 112, 0.14);
+    border-color: #4a90c2;
+    box-shadow: 0 0 0 4px rgba(74, 144, 194, 0.16);
 }
 
 .spots-grid {
