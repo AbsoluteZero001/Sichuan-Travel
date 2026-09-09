@@ -17,27 +17,32 @@ import os
 from pathlib import Path
 
 
-def _load_dotenv_if_present():
-    """轻量 .env 加载，避免强制依赖 python-dotenv。"""
+def _env_paths():
+    backend_dir = Path(__file__).resolve().parent.parent
+    project_dir = backend_dir.parent
+    return (backend_dir / '.env', project_dir / '.env')
+
+
+def _load_dotenv_if_present(override=False):
+    """轻量 .env 加载，避免强制依赖 python-dotenv。
+
+    override=False：只在变量不存在时填充（首次加载）。
+    override=True ：强制用 .env 中的值覆盖已有环境变量（热加载换 Key 时用）。
+    """
     try:
         from dotenv import load_dotenv  # type: ignore
     except ImportError:
-        # 没装 python-dotenv 时，使用内置兜底解析
-        _load_dotenv_builtin()
+        _load_dotenv_builtin(override=override)
         return
 
-    backend_dir = Path(__file__).resolve().parent.parent
-    project_dir = backend_dir.parent
-    for env_path in (backend_dir / '.env', project_dir / '.env'):
+    for env_path in _env_paths():
         if env_path.exists():
-            load_dotenv(env_path, override=False)
+            load_dotenv(env_path, override=override)
 
 
-def _load_dotenv_builtin():
+def _load_dotenv_builtin(override=False):
     """python-dotenv 未安装时的兜底解析。"""
-    backend_dir = Path(__file__).resolve().parent.parent
-    project_dir = backend_dir.parent
-    for env_path in (backend_dir / '.env', project_dir / '.env'):
+    for env_path in _env_paths():
         if not env_path.exists():
             continue
         try:
@@ -49,14 +54,41 @@ def _load_dotenv_builtin():
                     key, _, value = line.partition('=')
                     key = key.strip()
                     value = value.strip().strip('"').strip("'")
-                    if key and key not in os.environ:
+                    if key and (override or key not in os.environ):
                         os.environ[key] = value
         except OSError:
             continue
 
 
-# 模块加载时尝试加载 .env
-_load_dotenv_if_present()
+# 模块加载时首次加载 .env
+_load_dotenv_if_present(override=False)
+
+# 记录 .env 文件最近修改时间，用于热加载（换 Key 后无需重启 Flask）
+_env_mtime_cache = None
+
+
+def _env_signature():
+    """返回所有存在的 .env 文件的 (路径, 修改时间) 元组，文件不存在则忽略。"""
+    sig = []
+    for p in _env_paths():
+        try:
+            if p.exists():
+                sig.append((str(p), p.stat().st_mtime))
+        except OSError:
+            continue
+    return tuple(sig)
+
+
+def _maybe_reload_dotenv():
+    """检测 .env 是否被修改；若修改则重新加载（override 覆盖旧 Key）。
+
+    这样用户改完 backend/.env 换 Key / 换模型后，无需重启 Flask，下一次请求即生效。
+    """
+    global _env_mtime_cache
+    sig = _env_signature()
+    if sig != _env_mtime_cache:
+        _load_dotenv_if_present(override=True)
+        _env_mtime_cache = sig
 
 
 SYSTEM_PROMPT = (
@@ -74,6 +106,8 @@ MAX_HISTORY_MESSAGES = 10
 
 def get_ai_config():
     """返回 (api_key, base_url, model, timeout)。未配置 api_key 返回 None。"""
+    # 每次取配置前先检测 .env 是否被修改，实现换 Key 热加载（无需重启）
+    _maybe_reload_dotenv()
     api_key = os.getenv('AI_API_KEY') or os.getenv('LLM_API_KEY') or os.getenv('OPENAI_API_KEY', '')
     if not api_key:
         return None
