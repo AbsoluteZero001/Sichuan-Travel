@@ -357,13 +357,15 @@ async function loadFavoriteMap(spotIds) {
     return map;
 }
 
-/* ============ 全站旅游智能助手（右下角悬浮，所有页面自动加载） ============ */
+/* ============ 旅游智能助手（右下角悬浮，仅旅游指南页面加载） ============ */
 (function () {
     const MAX_HISTORY_TURNS = 6;
     let chatHistory = [];
     let isTyping = false;
 
     function initChatWidget() {
+        // 仅在旅游指南页面（travel-tips.html）显示，其他页面不注入
+        if (!/travel-tips\.html/i.test(window.location.pathname)) return;
         // 已存在则不重复注入
         if (document.getElementById('chatContainer')) return;
 
