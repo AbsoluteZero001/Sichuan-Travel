@@ -29,3 +29,4 @@
 | `gongga.jpg` | [金色贡嘎 - Golden Mountains - 2012.10 - panoramio.jpg](https://commons.wikimedia.org/wiki/File:%E9%87%91%E8%89%B2%E8%B4%A1%E5%98%8E_-_Golden_Mountains_-_2012.10_-_panoramio.jpg) |
 | `jiayang.jpg` | [Shibanxi-10-01.jpg](https://commons.wikimedia.org/wiki/File:Shibanxi-10-01.jpg) |
 | `seda.jpg` | [Larung Gar Five Sciences Buddhist Academy 2014 (14660043083).jpg](https://commons.wikimedia.org/wiki/File:Larung_Gar_Five_Sciences_Buddhist_Academy_2014_(14660043083).jpg) |
+| `luding-qiao.jpg` | [Luding Bridge from the southeast (20260205115751).jpg](https://commons.wikimedia.org/wiki/File:Luding_Bridge_from_the_southeast_(20260205115751).jpg) |

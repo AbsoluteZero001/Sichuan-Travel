@@ -679,3 +679,570 @@ footer p {
         width: 90%;
     }
 }
+
+/* Cultural tourism visual refresh */
+:root {
+    --ink: #16333a;
+    --ink-soft: #37535a;
+    --pine: #0d5b4b;
+    --jade: #2d8b70;
+    --jade-soft: #dceee7;
+    --gold: #c99b3f;
+    --gold-soft: #f7e8c6;
+    --paper: #fbf8ef;
+    --cloud: #ffffff;
+    --line: rgba(18, 80, 72, 0.14);
+    --shadow: 0 18px 45px rgba(20, 53, 49, 0.14);
+    --shadow-hover: 0 26px 55px rgba(12, 70, 60, 0.2);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: "Microsoft YaHei", "PingFang SC", "Segoe UI", sans-serif;
+    color: var(--ink);
+    line-height: 1.7;
+    background-color: var(--paper);
+    background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(249, 247, 237, 0.9));
+    -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+    background: var(--gold-soft);
+    color: var(--ink);
+}
+
+.container {
+    width: min(1280px, 100%);
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    padding: 12px 0;
+    color: #fff;
+    background: rgba(10, 54, 49, 0.92);
+    box-shadow: 0 8px 28px rgba(9, 45, 41, 0.18);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(233, 198, 117, 0.34);
+}
+
+header .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+}
+
+.logo {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+}
+
+.logo h1 {
+    margin: 0;
+    font-size: 26px;
+    letter-spacing: 2px;
+}
+
+.logo p {
+    margin: 0;
+    font-size: 12px;
+    color: #cfe5dc;
+}
+
+nav ul {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+nav ul li {
+    margin: 0;
+}
+
+nav ul li a,
+.auth-links a,
+.auth-links span {
+    position: relative;
+    color: #f7fbf9;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+nav ul li a::after,
+.auth-links a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 100%;
+    bottom: -7px;
+    height: 2px;
+    background: var(--gold);
+    transition: right 0.3s ease;
+}
+
+nav ul li a:hover::after,
+.auth-links a:hover::after {
+    right: 0;
+}
+
+.auth-links {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.banner {
+    position: relative;
+    isolation: isolate;
+    min-height: 460px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 70px 24px;
+    color: #fff;
+    text-align: center;
+    background:
+        linear-gradient(90deg, rgba(8, 43, 38, 0.72), rgba(14, 76, 65, 0.22), rgba(8, 43, 38, 0.56)),
+        url("/images/jiuzhaigou.jpg") center / cover no-repeat;
+    background-attachment: fixed;
+    box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.banner::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 7px;
+    background: linear-gradient(90deg, var(--pine), var(--gold), var(--jade), var(--gold), var(--pine));
+}
+
+.banner h2 {
+    position: relative;
+    z-index: 1;
+    margin: 0 0 14px;
+    font-size: clamp(34px, 5vw, 58px);
+    line-height: 1.25;
+    letter-spacing: 4px;
+    text-shadow: 0 5px 24px rgba(3, 32, 28, 0.42);
+}
+
+.banner p {
+    position: relative;
+    z-index: 1;
+    margin: 0 0 28px;
+    font-size: 17px;
+    color: #f2efe2;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 28px;
+    border: 0;
+    border-radius: 6px;
+    color: #fff;
+    background: var(--jade);
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(24, 97, 79, 0.25);
+    background: var(--pine);
+}
+
+.btn-secondary {
+    background: #1f6f66;
+}
+
+.btn-danger {
+    background: #c24a45;
+}
+
+.btn-favorite {
+    background: #fff8f2;
+    color: #c24a45;
+    border: 1px solid rgba(194, 74, 69, 0.35);
+}
+
+.btn-favorite:hover {
+    background: #ffe9e4;
+}
+
+.btn-favorite.filled {
+    background: #c24a45;
+    color: #fff;
+}
+
+.section {
+    padding: 72px 0;
+    background: rgba(255, 255, 255, 0.62);
+}
+
+.section-alt,
+section.section[style*="#f8f9fa"] {
+    background: #f0f3ea;
+}
+
+.section-title {
+    margin: 0 auto 44px;
+    text-align: center;
+}
+
+.section-title h3 {
+    position: relative;
+    display: inline-block;
+    margin: 0 0 14px;
+    color: var(--pine);
+    font-size: 30px;
+    letter-spacing: 2px;
+}
+
+.section-title .line {
+    width: 88px;
+    height: 3px;
+    margin: 0 auto;
+    background: linear-gradient(90deg, var(--gold), var(--jade));
+    border-radius: 99px;
+}
+
+.search-bar {
+    display: flex;
+    justify-content: center;
+    margin: 0 auto 44px;
+}
+
+.search-bar input {
+    width: min(520px, 100%);
+    padding: 14px 22px;
+    border: 1px solid rgba(20, 82, 73, 0.24);
+    border-radius: 999px 0 0 999px;
+    outline: none;
+    background: rgba(255, 255, 255, 0.88);
+    color: var(--ink);
+    box-shadow: 0 8px 24px rgba(27, 76, 66, 0.08);
+}
+
+.search-bar button {
+    padding: 14px 30px;
+    border: 0;
+    border-radius: 0 999px 999px 0;
+    background: var(--gold);
+    color: #2f2a18;
+    font-weight: 700;
+    cursor: pointer;
+    transition: filter 0.25s ease;
+}
+
+.search-bar button:hover {
+    filter: brightness(1.06);
+}
+
+.search-bar input:focus {
+    border-color: var(--jade);
+    box-shadow: 0 0 0 4px rgba(45, 139, 112, 0.14);
+}
+
+.spots-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 32px;
+}
+
+.spot-card {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(19, 76, 68, 0.1);
+    border-radius: 8px;
+    background: var(--cloud);
+    box-shadow: var(--shadow);
+    transform: translateZ(0);
+    animation: cardIn 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+    transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.35s ease;
+}
+
+@keyframes cardIn {
+    from {
+        opacity: 0;
+        transform: translateY(22px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.spot-card img {
+    display: block;
+    width: 100%;
+    height: 225px;
+    object-fit: cover;
+    transform: scale(1.001);
+    transition: transform 0.85s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.45s ease;
+    will-change: transform;
+}
+
+.spot-card:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-hover);
+}
+
+.spot-card:hover img {
+    transform: scale(1.12);
+    filter: saturate(1.08) contrast(1.02);
+}
+
+.spot-card .spot-info {
+    position: relative;
+    z-index: 1;
+    padding: 24px;
+    background: rgba(255, 255, 255, 0.96);
+    transform: translateY(0);
+    transition: transform 0.4s ease, background 0.4s ease;
+}
+
+.spot-card:hover .spot-info {
+    background: rgba(255, 255, 255, 0.99);
+    transform: translateY(-6px);
+}
+
+.spot-card .spot-info h4 {
+    margin: 0 0 10px;
+    color: var(--pine);
+    font-size: 21px;
+}
+
+.spot-card .spot-info p {
+    margin: 0 0 16px;
+    color: var(--ink-soft);
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.spot-card .spot-info .tag {
+    display: inline-block;
+    margin: 0 6px 12px 0;
+    padding: 4px 12px;
+    border-radius: 999px;
+    color: var(--pine);
+    background: var(--jade-soft);
+    font-size: 12px;
+}
+
+.spot-card .spot-info .btn {
+    padding: 9px 18px;
+    font-size: 13px;
+}
+
+.feature-item {
+    position: relative;
+    overflow: hidden;
+    padding: 30px 26px;
+    border: 1px solid rgba(18, 76, 68, 0.1);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.88);
+    box-shadow: 0 12px 30px rgba(18, 67, 60, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.feature-item::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, var(--gold), var(--jade));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s ease;
+}
+
+.feature-item:hover {
+    transform: translateY(-7px);
+    border-color: rgba(201, 155, 63, 0.4);
+    box-shadow: 0 18px 38px rgba(18, 67, 60, 0.14);
+}
+
+.feature-item:hover::before {
+    transform: scaleX(1);
+}
+
+.travel-tips {
+    align-items: center;
+}
+
+.travel-tips .tips-image img,
+.spot-detail .spot-header img {
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+}
+
+table {
+    border-radius: 8px;
+}
+
+table th {
+    background: var(--pine);
+}
+
+.modal-content {
+    border-radius: 8px;
+    box-shadow: var(--shadow-hover);
+}
+
+footer {
+    margin-top: 0;
+    padding: 28px 0;
+    color: #eaf4ef;
+    background:
+        linear-gradient(180deg, rgba(10, 54, 49, 0.96), rgba(8, 43, 38, 0.98)),
+        url("/images/dujiangyan.jpg") center / cover no-repeat;
+    background-blend-mode: multiply;
+    border-top: 3px solid rgba(201, 155, 63, 0.6);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+@media (max-width: 1100px) {
+    .spots-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .features {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .container {
+        padding: 0 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    header .container {
+        flex-direction: column;
+        gap: 10px;
+        padding: 12px 16px;
+    }
+
+    nav ul {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 16px;
+    }
+
+    .auth-links {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .banner {
+        min-height: 390px;
+        padding: 60px 18px;
+        background-attachment: scroll;
+    }
+
+    .spots-grid,
+    .features {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .spot-card img {
+        height: 210px;
+    }
+
+    .section {
+        padding: 54px 0;
+    }
+
+    .search-bar {
+        flex-direction: row;
+    }
+
+    .travel-tips {
+        flex-direction: column;
+    }
+
+    .spot-detail .spot-header {
+        flex-direction: column;
+    }
+
+    .spot-detail .spot-header img {
+        width: 100%;
+        height: 250px;
+    }
+
+    .modal-content {
+        width: 92%;
+        max-height: 88vh;
+    }
+}
+
+.banner {
+    overflow: hidden;
+    background-color: #0d5b4b;
+}
+
+.banner::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background:
+        linear-gradient(90deg, rgba(8, 43, 38, 0.72), rgba(14, 76, 65, 0.18), rgba(8, 43, 38, 0.62)),
+        url("/images/jiuzhaigou.jpg") center / cover no-repeat;
+    animation: heroDrift 24s ease-in-out infinite alternate;
+    will-change: transform;
+}
+
+.banner h2,
+.banner p,
+.banner .btn {
+    position: relative;
+    z-index: 2;
+}
+
+@keyframes heroDrift {
+    from {
+        transform: scale(1);
+    }
+    to {
+        transform: scale(1.12);
+    }
+}
